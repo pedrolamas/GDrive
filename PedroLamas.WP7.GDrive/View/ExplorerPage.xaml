@@ -1,0 +1,106 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="PedroLamas.WP7.GDrive.View.ExplorerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+    xmlns:mvvmlightCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
+    xmlns:cimbalino="http://cimbalino.org"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:localControls="clr-namespace:PedroLamas.WP7.GDrive.Controls"
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True"
+    DataContext="{Binding Explorer, Source={StaticResource Locator}}"
+    Style="{StaticResource PhoneApplicationPageStyle}">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <mvvmlightCommand:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="BackKeyPress">
+            <mvvmlightCommand:EventToCommand Command="{Binding BackKeyPressCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
+        <i:Interaction.Behaviors>
+            <cimbalino:ApplicationBarBehavior ForegroundColor="{StaticResource Box2ForegroundColor}" BackgroundColor="{StaticResource Box2BackgroundColor}">
+                <cimbalino:ApplicationBarIconButton IconUri="/Images/appbar.add.rest.png" Text="add" Command="{Binding AddFileCommand, Mode=OneTime}" IsVisible="{Binding IsSelectionEnabled, Converter={StaticResource NegativeBooleanConverter}}" />
+                <cimbalino:ApplicationBarIconButton IconUri="/Images/appbar.manage.rest.png" Text="select" Command="{Binding EnableSelectionCommand, Mode=OneTime}" IsVisible="{Binding IsSelectionEnabled, Converter={StaticResource NegativeBooleanConverter}}" />
+                <cimbalino:ApplicationBarIconButton IconUri="/Images/appbar.sync.rest.png" Text="refresh" Command="{Binding RefreshFilesCommand, Mode=OneTime}" IsVisible="{Binding IsSelectionEnabled, Converter={StaticResource NegativeBooleanConverter}}" />
+                <cimbalino:ApplicationBarIconButton IconUri="/Images/appbar.delete.rest.png" Text="delete" Command="{Binding DeleteFilesCommand, Mode=OneTime}" CommandParameter="{Binding SelectedItems, ElementName=FilesList}" IsVisible="{Binding IsSelectionEnabled}" />
+                <cimbalino:ApplicationBarBehavior.MenuItems>
+                    <cimbalino:ApplicationBarMenuItem Text="new folder" Command="{Binding CreateNewFolderCommand, Mode=OneTime}" />
+                    <cimbalino:ApplicationBarMenuItem Text="about" Command="{Binding ShowAboutCommand, Mode=OneTime}" />
+                </cimbalino:ApplicationBarBehavior.MenuItems>
+            </cimbalino:ApplicationBarBehavior>
+        </i:Interaction.Behaviors>
+
+        <toolkit:LockablePivot Title="{Binding}" SelectedIndex="{Binding PivotSelectedIndex, Mode=TwoWay}" IsLocked="{Binding IsSelectionEnabled}" Foreground="{StaticResource ForegroundBrush}">
+            <toolkit:LockablePivot.TitleTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock>
+                            <Run Text="{StaticResource ApplicationTitle}" />
+                            <Run Text=" :: " />
+                            <Run Text="{Binding AccountName}" />
+                            <LineBreak />
+                            <Run Text="{Binding CurrentPath}" />
+                        </TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </toolkit:LockablePivot.TitleTemplate>
+            <controls:PivotItem Header="files">
+                <toolkit:MultiselectList x:Name="FilesList" ItemsSource="{Binding Files}" IsSelectionEnabled="{Binding IsSelectionEnabled, Mode=TwoWay}" Margin="-24,0,0,0" ItemContainerStyle="{StaticResource MultiselectItemStyle}">
+                    <toolkit:MultiselectList.ItemTemplate>
+                        <DataTemplate>
+                            <HyperlinkButton Command="{Binding Explorer.OpenFileCommand, Source={StaticResource Locator}, Mode=OneTime}" CommandParameter="{Binding}" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Style="{StaticResource EmptyButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox IsChecked="{Binding Starred}" Command="{Binding Explorer.ChangeStaredStatusCommand, Source={StaticResource Locator}, Mode=OneTime}" CommandParameter="{Binding}" Style="{StaticResource StarCheckBoxStyle}" toolkit:TiltEffect.SuppressTilt="True" />
+
+                                    <StackPanel Margin="{StaticResource PhoneVerticalMargin}" Grid.Column="1">
+                                        <TextBlock Text="{Binding Title}" Margin="0" TextTrimming="WordEllipsis" Style="{StaticResource TextTitle2Style}" />
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="{Binding Icon}" Width="27" Height="27" VerticalAlignment="Center" Grid.Column="1" Margin="0,0,6,0" />
+                                            <TextBlock Text="{Binding Description}" Margin="0" VerticalAlignment="Center" Style="{StaticResource TextSubtleStyle}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </HyperlinkButton>
+                        </DataTemplate>
+                    </toolkit:MultiselectList.ItemTemplate>
+                </toolkit:MultiselectList>
+            </controls:PivotItem>
+
+            <controls:PivotItem Header="pictures">
+                <ItemsControl ItemsSource="{Binding PictureFiles}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <toolkit:WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="173" Height="173" Background="#C0C0C0" Margin="12,0,0,12" Padding="1">
+                                <localControls:SmoothImage ImageSource="{Binding ThumbnailLink}" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </controls:PivotItem>
+        </toolkit:LockablePivot>
+    </Grid>
+</phone:PhoneApplicationPage>
