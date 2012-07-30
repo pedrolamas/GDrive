@@ -57,7 +57,7 @@ See the [LICENSE.txt][3] file for details.
 
 [1]: http://www.pedrolamas.com
 [2]: http://twitter.com/pedrolamas
-[3]: https://github.com/pedrolamas/ServiceModel/raw/master/LICENSE.txt "License"
+[3]: https://github.com/pedrolamas/GDrive/raw/master/LICENSE.txt "License"
 [4]: https://github.com/Cimbalino/Cimbalino-Phone-Toolkit/wiki/Cimbalino%3F%3F
 [5]: http://nuget.org/
 [6]: http://mvvmlight.codeplex.com/
