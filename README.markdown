@@ -51,6 +51,12 @@ Also, before running the code you'll need to get access to the Google Drive API:
  - You can now copy the **Client ID** and **Client secret** values back to the **ViewModelLocator.cs**, updating the two constants on top of the file, with these values.
  - Build the code, run the app, test it now!
 
+## Reference
+
+ - [Google Drive SDK API Reference][13]
+ - [Google APIs Explorer][14]
+ - [Google Accounts Authentication and Authorization: Using OAuth 2.0 for Login][15]
+
 ## License
 
 See the [LICENSE.txt][3] file for details.
@@ -67,3 +73,6 @@ See the [LICENSE.txt][3] file for details.
 [10]: http://james.newtonking.com/projects/json-net.aspx
 [11]: http://docs.nuget.org/docs/workflows/using-nuget-without-committing-packages
 [12]: http://code.google.com/apis/console
+[13]: https://developers.google.com/drive/v2/reference/
+[14]: https://developers.google.com/apis-explorer/#p/drive/v2/
+[15]: https://developers.google.com/accounts/docs/OAuth2Login/
