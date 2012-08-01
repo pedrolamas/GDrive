@@ -92,18 +92,25 @@ namespace PedroLamas.WP7.GDrive.ViewModel
                     _systemTrayService.SetProgressIndicator("");
                 }
 
-                if (e.Uri.Host != "localhost")
+                if (e.Uri == null || e.Uri.Host != "localhost")
                     return;
 
                 ShowBrowser = false;
 
                 WebBrowserSourceUri = new Uri("https://accounts.google.com/Logout");
 
-                var queryValues = e.Uri.Query.TrimStart('?').Split('&')
-                    .Select(x => x.Split('='))
-                    .ToDictionary(x => x[0], x => x.Length > 0 ? Uri.UnescapeDataString(x[1]) : null);
+                try
+                {
+                    var queryValues = e.Uri.Query.TrimStart('?').Split('&')
+                        .Select(x => x.Split('='))
+                        .ToDictionary(x => x[0], x => x.Length > 0 ? Uri.UnescapeDataString(x[1]) : null);
 
-                ExchangeAuthorizationCode(queryValues["code"]);
+                    ExchangeAuthorizationCode(queryValues["code"]);
+                }
+                catch
+                {
+                    _messageBoxService.Show("Unable to exchange the authentication code!", "Error");
+                }
             });
 
             WebBrowserNavigatedCommand = new RelayCommand<NavigationEventArgs>(e =>

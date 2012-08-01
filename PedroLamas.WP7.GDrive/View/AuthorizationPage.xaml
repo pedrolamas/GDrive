@@ -14,8 +14,8 @@
     SupportedOrientations="Portrait" Orientation="Portrait"
     mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True"
-    shell:SystemTray.Opacity="0"
-    DataContext="{Binding Authorization, Source={StaticResource Locator}}">
+    DataContext="{Binding Authorization, Source={StaticResource Locator}}"
+    Style="{StaticResource PhoneApplicationPageStyle}">
     
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
