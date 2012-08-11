@@ -18,6 +18,9 @@
       <Capability Name="ID_CAP_CONTACTS" />
       <Capability Name="ID_CAP_APPOINTMENTS" />
     </Capabilities>
+    <Requirements>
+      <Requirement Name="ID_REQ_MEMORY_90" />
+    </Requirements>
     <Tasks>
       <DefaultTask Name="_default" NavigationPage="View/MainPage.xaml" />
     </Tasks>
