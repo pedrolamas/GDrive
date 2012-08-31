@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Navigation;
-using GalaSoft.MvvmLight.Threading;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 
@@ -32,6 +31,8 @@ namespace PedroLamas.WP7.GDrive
 
             ThemeManager.OverrideOptions = ThemeManagerOverrideOptions.SystemTrayColors;
             ThemeManager.ToLightTheme();
+
+            LittleWatson.Initialize("pedrolamas@gmail.com", "GDrive Error");
 
             // Show graphics profiling information while debugging.
             if (System.Diagnostics.Debugger.IsAttached)
@@ -82,6 +83,8 @@ namespace PedroLamas.WP7.GDrive
         // Code to execute if a navigation fails
         private void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
+            LittleWatson.ReportException(e.Exception, "");
+
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 // A navigation has failed; break into the debugger
@@ -92,6 +95,8 @@ namespace PedroLamas.WP7.GDrive
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
+            LittleWatson.ReportException(e.ExceptionObject, "");
+
             if (System.Diagnostics.Debugger.IsAttached)
             {
                 // An unhandled exception has occurred; break into the debugger
@@ -131,6 +136,8 @@ namespace PedroLamas.WP7.GDrive
 
             // Remove this handler since it is no longer needed
             RootFrame.Navigated -= CompleteInitializePhoneApplication;
+
+            LittleWatson.CheckForPreviousException();
         }
 
         #endregion
