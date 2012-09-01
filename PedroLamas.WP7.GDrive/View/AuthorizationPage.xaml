@@ -34,7 +34,7 @@
         </StackPanel>
 
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <phone:WebBrowser Source="{Binding WebBrowserSourceUri}" IsScriptEnabled="True" Visibility="{Binding ShowBrowser, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <phone:WebBrowser x:Name="MainWebBrowser" Source="{Binding WebBrowserSourceUri}" IsScriptEnabled="True" Visibility="{Binding ShowBrowser, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Navigating">
                         <mvvmCommand:EventToCommand Command="{Binding WebBrowserNavigatingCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
