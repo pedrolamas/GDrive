@@ -60,7 +60,7 @@
     </i:Interaction.Triggers>
 
     <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
-        <controls:Pivot Title="{StaticResource ApplicationTitle}" SelectedIndex="{Binding PivotSelectedIndex, Mode=TwoWay}" Margin="0,32,0,0" Foreground="{StaticResource ForegroundBrush}">
+        <controls:Pivot Title="{StaticResource ApplicationTitle}" SelectedIndex="{Binding PivotSelectedIndex, Mode=TwoWay}" Foreground="{StaticResource ForegroundBrush}">
             <controls:PivotItem Header="about">
                 <Grid>
                     <Grid.RowDefinitions>
