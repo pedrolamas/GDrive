@@ -87,6 +87,15 @@ namespace PedroLamas.WP7.GDrive.ViewModel
                 _isSelectionEnabled = value;
 
                 RaisePropertyChanged(() => IsSelectionEnabled);
+                RaisePropertyChanged(() => SelectedApplicationBarIndex);
+            }
+        }
+
+        public int SelectedApplicationBarIndex
+        {
+            get
+            {
+                return _isSelectionEnabled ? 1 : 0;
             }
         }
 

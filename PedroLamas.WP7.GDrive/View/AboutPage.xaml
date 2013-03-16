@@ -1,52 +1,58 @@
-﻿<phone:PhoneApplicationPage 
-    x:Class="PedroLamas.WP7.GDrive.View.AboutPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
-    xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-    xmlns:mvvmlightCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
-    xmlns:cimbalino="http://cimbalino.org"
-    FontFamily="{StaticResource PhoneFontFamilyNormal}"
-    FontSize="{StaticResource PhoneFontSizeNormal}"
-    Foreground="{StaticResource PhoneForegroundBrush}"
-    SupportedOrientations="Portrait" Orientation="Portrait"
-    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
-    shell:SystemTray.IsVisible="True"
-    DataContext="{Binding About, Source={StaticResource Locator}}"
-    Style="{StaticResource PhoneApplicationPageStyle}">
+﻿<phone:PhoneApplicationPage x:Class="PedroLamas.WP7.GDrive.View.AboutPage"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:cimbalinoControls="clr-namespace:System.Windows.Controls;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:mvvmlightCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
+                            xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+                            xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+                            DataContext="{Binding About,
+                                                  Source={StaticResource Locator}}"
+                            FontFamily="{StaticResource PhoneFontFamilyNormal}"
+                            FontSize="{StaticResource PhoneFontSizeNormal}"
+                            Foreground="{StaticResource PhoneForegroundBrush}"
+                            Orientation="Portrait"
+                            Style="{StaticResource PhoneApplicationPageStyle}"
+                            SupportedOrientations="Portrait"
+                            d:DesignHeight="768"
+                            d:DesignWidth="480"
+                            shell:SystemTray.IsVisible="True"
+                            mc:Ignorable="d">
 
     <phone:PhoneApplicationPage.Resources>
         <Style x:Key="HyperlinkEmptyStyle" TargetType="HyperlinkButton">
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="HyperlinkButton">
-                        <ContentPresenter/>
+                        <ContentPresenter />
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <Style x:Key="HeaderedContentControl1Style" TargetType="cimbalino:HeaderedContentControl">
-            <Setter Property="HorizontalAlignment" Value="Stretch"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
+        <Style x:Key="HeaderedContentControl1Style" TargetType="cimbalinoControls:HeaderedContentControl">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Margin" Value="0,0,0,12" />
             <Setter Property="HeaderTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{StaticResource TextExtraLargeStyle}" />
+                        <TextBlock Style="{StaticResource TextExtraLargeStyle}" Text="{Binding}" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" TextWrapping="Wrap" Style="{StaticResource TextSubtleStyle}" Foreground="{StaticResource PhoneAccentBrush}" />
+                        <TextBlock Foreground="{StaticResource PhoneAccentBrush}"
+                                   Style="{StaticResource TextSubtleStyle}"
+                                   Text="{Binding}"
+                                   TextWrapping="Wrap" />
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
@@ -60,7 +66,10 @@
     </i:Interaction.Triggers>
 
     <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
-        <controls:Pivot Title="{StaticResource ApplicationTitle}" SelectedIndex="{Binding PivotSelectedIndex, Mode=TwoWay}" Foreground="{StaticResource ForegroundBrush}">
+        <controls:Pivot Title="{StaticResource ApplicationTitle}"
+                        Foreground="{StaticResource ForegroundBrush}"
+                        SelectedIndex="{Binding PivotSelectedIndex,
+                                                Mode=TwoWay}">
             <controls:PivotItem Header="about">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -70,14 +79,20 @@
 
                     <ScrollViewer>
                         <StackPanel>
-                            <HyperlinkButton Style="{StaticResource HyperlinkEmptyStyle}" Command="{Binding MarketplaceSearchCommand, Mode=OneTime}">
-                                <cimbalino:HeaderedContentControl Header="development" Content="Pedro Lamas" Style="{StaticResource HeaderedContentControl1Style}" />
+                            <HyperlinkButton Command="{Binding MarketplaceSearchCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                                <cimbalinoControls:HeaderedContentControl Content="Pedro Lamas"
+                                                                          Header="development"
+                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
                             </HyperlinkButton>
-                            <HyperlinkButton Style="{StaticResource HyperlinkEmptyStyle}" Command="{Binding OpenHomepageCommand, Mode=OneTime}">
-                                <cimbalino:HeaderedContentControl Header="homepage" Content="http://www.pedrolamas.com" Style="{StaticResource HeaderedContentControl1Style}" />
+                            <HyperlinkButton Command="{Binding OpenHomepageCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                                <cimbalinoControls:HeaderedContentControl Content="http://www.pedrolamas.com"
+                                                                          Header="homepage"
+                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
                             </HyperlinkButton>
-                            <HyperlinkButton Style="{StaticResource HyperlinkEmptyStyle}" Command="{Binding OpenTwitterCommand, Mode=OneTime}">
-                                <cimbalino:HeaderedContentControl Header="twitter" Content="@pedrolamas" Style="{StaticResource HeaderedContentControl1Style}" />
+                            <HyperlinkButton Command="{Binding OpenTwitterCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                                <cimbalinoControls:HeaderedContentControl Content="@pedrolamas"
+                                                                          Header="twitter"
+                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
                             </HyperlinkButton>
                         </StackPanel>
                     </ScrollViewer>
@@ -88,16 +103,21 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
 
-                        <Border Background="{StaticResource Box2BackgroundBrush}" Grid.ColumnSpan="2" Margin="-12,0,-12,0" />
-                        <Button Content="rate" Command="{Binding RateApplicationCommand, Mode=OneTime}" />
-                        <Button Content="share" Grid.Column="1" Command="{Binding ShareApplicationCommand, Mode=OneTime}" />
+                        <Border Grid.ColumnSpan="2"
+                                Margin="-12,0,-12,0"
+                                Background="{StaticResource Box2BackgroundBrush}" />
+                        <Button Command="{Binding RateApplicationCommand, Mode=OneTime}" Content="rate" />
+                        <Button Grid.Column="1"
+                                Command="{Binding ShareApplicationCommand,
+                                                  Mode=OneTime}"
+                                Content="share" />
                     </Grid>
                 </Grid>
             </controls:PivotItem>
 
             <controls:PivotItem Header="legal">
                 <StackPanel>
-                    <TextBlock TextWrapping="Wrap" Style="{StaticResource PhoneTextNormalStyle}">
+                    <TextBlock Style="{StaticResource PhoneTextNormalStyle}" TextWrapping="Wrap">
                         <Run>GDrive is a Google Drive client application for Windows Phone.</Run>
                         <LineBreak />
                         <LineBreak />
