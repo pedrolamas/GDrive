@@ -35,6 +35,8 @@ namespace PedroLamas.WP7.GDrive.ViewModel
 
         public RelayCommand NewAccountCommand { get; private set; }
 
+        public RelayCommand<AccountViewModel> RemoveAccountCommand { get; private set; }
+
         public RelayCommand<AccountViewModel> OpenAccountCommand { get; private set; }
 
         public RelayCommand ShowAboutCommand { get; private set; }
@@ -53,6 +55,14 @@ namespace PedroLamas.WP7.GDrive.ViewModel
             NewAccountCommand = new RelayCommand(() =>
             {
                 _navigationService.NavigateTo("/View/AuthorizationPage.xaml");
+            });
+
+            RemoveAccountCommand = new RelayCommand<AccountViewModel>(account =>
+            {
+                _mainModel.AvailableAccounts.Remove(account.Model);
+                _mainModel.Save();
+
+                RefreshAccountsList();
             });
 
             OpenAccountCommand = new RelayCommand<AccountViewModel>(account =>
@@ -89,11 +99,16 @@ namespace PedroLamas.WP7.GDrive.ViewModel
 
             MessengerInstance.Register<AvailableAccountsChangedMessage>(this, message =>
             {
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                {
-                    RaisePropertyChanged(() => AvailableAccounts);
-                    RaisePropertyChanged(() => EmptyAvailableAccounts);
-                });
+                RefreshAccountsList();
+            });
+        }
+
+        private void RefreshAccountsList()
+        {
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                RaisePropertyChanged(() => AvailableAccounts);
+                RaisePropertyChanged(() => EmptyAvailableAccounts);
             });
         }
     }
