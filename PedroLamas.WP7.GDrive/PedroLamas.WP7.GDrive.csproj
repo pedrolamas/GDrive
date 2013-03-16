@@ -50,22 +50,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cimbalino.Phone.Toolkit, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cimbalino.Phone.Toolkit, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cimbalino.Phone.Toolkit.1.4.1.0\lib\sl40-wp71\Cimbalino.Phone.Toolkit.dll</HintPath>
+      <HintPath>..\packages\Cimbalino.Phone.Toolkit.2.1\lib\sl4-wp71\Cimbalino.Phone.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="Cimbalino.Phone.Toolkit.Camera, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cimbalino.Phone.Toolkit.Camera, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cimbalino.Phone.Toolkit.Camera.1.4.1.0\lib\sl40-wp71\Cimbalino.Phone.Toolkit.Camera.dll</HintPath>
+      <HintPath>..\packages\Cimbalino.Phone.Toolkit.Camera.2.1\lib\sl4-wp71\Cimbalino.Phone.Toolkit.Camera.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Extras.WP71, Version=4.0.23.35541, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.4.1.23.0\lib\sl4-windowsphone71\GalaSoft.MvvmLight.Extras.WP71.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.Extras.WP71, Version=4.1.27.22669, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\sl4-wp71\GalaSoft.MvvmLight.Extras.WP71.dll</HintPath>
     </Reference>
-    <Reference Include="GalaSoft.MvvmLight.WP71, Version=4.0.23.35541, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.4.1.23.0\lib\sl4-windowsphone71\GalaSoft.MvvmLight.WP71.dll</HintPath>
+    <Reference Include="GalaSoft.MvvmLight.WP71, Version=4.1.27.22669, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\sl4-wp71\GalaSoft.MvvmLight.WP71.dll</HintPath>
     </Reference>
-    <Reference Include="JeffWilcox.PhoneThemeManager">
-      <HintPath>..\packages\PhoneThemeManager.1.01\lib\sl4-windowsphone71\JeffWilcox.PhoneThemeManager.dll</HintPath>
+    <Reference Include="JeffWilcox.PhoneThemeManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\PhoneThemeManager.1.3.3\lib\sl4-windowsphone71\JeffWilcox.PhoneThemeManager.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
@@ -74,25 +77,27 @@
     </Reference>
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.4.1.23.0\lib\sl4-windowsphone71\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\sl4-wp71\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.GamerServices" />
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.7\lib\sl4-windowsphone71\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\sl4-windowsphone71\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PedroLamas.WP7.ServiceModel, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\lib\PedroLamas.WP7.ServiceModel.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp.WindowsPhone, Version=103.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="RestSharp.WindowsPhone, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\RestSharp.103.2\lib\sl4-wp71\RestSharp.WindowsPhone.dll</HintPath>
+      <HintPath>..\packages\RestSharp.104.1\lib\sl4-wp71\RestSharp.WindowsPhone.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Interactivity, Version=3.8.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\MvvmLightLibs.4.1.23.0\lib\sl4-windowsphone71\System.Windows.Interactivity.dll</HintPath>
+      <HintPath>..\packages\MvvmLightLibs.4.1.27.0\lib\sl4-wp71\System.Windows.Interactivity.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="mscorlib.extensions" />
