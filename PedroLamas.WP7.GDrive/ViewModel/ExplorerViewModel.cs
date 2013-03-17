@@ -242,7 +242,7 @@ namespace PedroLamas.WP7.GDrive.ViewModel
 
             MessengerInstance.Register<RefreshFilesMessage>(this, message =>
             {
-                DispatcherHelper.UIDispatcher.BeginInvoke(() =>
+                DispatcherHelper.RunAsync(() =>
                 {
                     RefreshFiles();
                 });
@@ -359,7 +359,7 @@ namespace PedroLamas.WP7.GDrive.ViewModel
                 if (result.TaskResult != Microsoft.Phone.Tasks.TaskResult.OK)
                     return;
 
-                DispatcherHelper.UIDispatcher.BeginInvoke(() =>
+                DispatcherHelper.RunAsync(() =>
                 {
                     _mainModel.CheckTokenAndExecute<GoogleDriveFile>((authToken, callback, state) =>
                     {
