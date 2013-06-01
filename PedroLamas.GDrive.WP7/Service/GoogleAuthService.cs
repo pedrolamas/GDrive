@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PedroLamas.GDrive.Helpers;
 using PedroLamas.ServiceModel;
 using RestSharp;
 
@@ -32,10 +33,7 @@ namespace PedroLamas.GDrive.Service
                 {"approval_prompt", "force"},
             };
 
-            var queryString = string.Join("&", queryStringValues
-                .Select(x => string.Format("{0}={1}", x.Key, Uri.EscapeDataString(x.Value))));
-
-            var completeUrl = "https://accounts.google.com/o/oauth2/auth?" + queryString;
+            var completeUrl = "https://accounts.google.com/o/oauth2/auth?" + queryStringValues.ToQueryString();
 
             return new Uri(completeUrl);
         }

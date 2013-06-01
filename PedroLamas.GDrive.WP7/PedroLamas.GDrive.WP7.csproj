@@ -107,6 +107,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SmoothImage.cs" />
+    <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Model\AccountModel.cs" />
     <Compile Include="Model\GoogleDriveBreadcrumbs.cs" />
     <Compile Include="Service\GoogleAuthService.cs" />
