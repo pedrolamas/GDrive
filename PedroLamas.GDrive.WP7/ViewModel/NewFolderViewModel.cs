@@ -34,10 +34,7 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                return "/" + string.Join("/", _mainModel.CurrentAccount.PathBreadcrumbs
-                    .Select(x => _mainModel.CurrentAccount.Files[x.Id].Title)
-                    .Reverse()
-                    .ToArray());
+                return _mainModel.CurrentPath;
             }
         }
 
@@ -93,7 +90,7 @@ namespace PedroLamas.GDrive.ViewModel
                 _googleDriveService.FilesInsert(authToken, new GoogleDriveFilesInsertRequest()
                 {
                     Filename = FolderName,
-                    FolderId = _mainModel.CurrentAccount.CurrentFolder.Id,
+                    FolderId = _mainModel.CurrentFolderId,
                     Fields = GoogleDriveFileFields
                 }, callback, state);
             }, result =>

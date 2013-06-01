@@ -108,13 +108,11 @@
     </Compile>
     <Compile Include="Controls\SmoothImage.cs" />
     <Compile Include="Model\AccountModel.cs" />
+    <Compile Include="Model\GoogleDriveBreadcrumbs.cs" />
     <Compile Include="Service\GoogleAuthService.cs" />
     <Compile Include="Service\GoogleClientSettings.cs" />
     <Compile Include="Service\GoogleDriveAbout.cs" />
     <Compile Include="Service\GoogleDriveAboutRequest.cs" />
-    <Compile Include="Service\GoogleDriveChild.cs" />
-    <Compile Include="Service\GoogleDriveChildrenListRequest.cs" />
-    <Compile Include="Service\GoogleDriveChildrenListResponse.cs" />
     <Compile Include="Service\GoogleDriveFeature.cs" />
     <Compile Include="Service\GoogleDriveFile.cs" />
     <Compile Include="Service\GoogleDriveFilesGetRequest.cs" />

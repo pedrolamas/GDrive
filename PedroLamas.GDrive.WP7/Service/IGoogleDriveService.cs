@@ -18,7 +18,5 @@ namespace PedroLamas.GDrive.Service
         RestRequestAsyncHandle FilesTrash(GoogleAuthToken authToken, string fileId, ResultCallback<GoogleDriveFile> callback, object state);
 
         RestRequestAsyncHandle FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, ResultCallback<GoogleDriveFile> callback, object state);
-
-        RestRequestAsyncHandle ChildrenList(GoogleAuthToken authToken, GoogleDriveChildrenListRequest childrenListRequest, ResultCallback<GoogleDriveChildrenListResponse> callback, object state);
     }
 }

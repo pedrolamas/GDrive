@@ -17,8 +17,7 @@ namespace PedroLamas.GDrive.ViewModel
 {
     public class ExplorerViewModel : ViewModelBase
     {
-        private const string GoogleDriveChildrenFields = "etag,items/id,nextPageToken";
-        private const string GoogleDriveFileFields = "description,etag,fileSize,id,labels,mimeType,modifiedDate,title";
+        private const string GoogleDriveFileFields = "etag,items(description,fileSize,id,labels,mimeType,modifiedDate,title),nextPageToken";
 
         private readonly IMainModel _mainModel;
         private readonly IGoogleDriveService _googleDriveService;
@@ -29,7 +28,7 @@ namespace PedroLamas.GDrive.ViewModel
 
         private int _pivotSelectedIndex;
         private bool _isSelectionEnabled;
-        private RestRequestAsyncHandle _asyncHandle = null;
+        private RestRequestAsyncHandle _asyncHandle;
 
         #region Properties
 
@@ -45,10 +44,7 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                return "/" + string.Join("/", _mainModel.CurrentAccount.PathBreadcrumbs
-                    .Select(x => _mainModel.CurrentAccount.Files[x.Id].Title)
-                    .Reverse()
-                    .ToArray());
+                return _mainModel.CurrentPath;
             }
         }
 
@@ -207,6 +203,8 @@ namespace PedroLamas.GDrive.ViewModel
 
             BackKeyPressCommand = new RelayCommand<CancelEventArgs>(e =>
             {
+                GoogleDriveFile item;
+
                 if (PivotSelectedIndex == 1)
                 {
                     PivotSelectedIndex = 0;
@@ -219,11 +217,9 @@ namespace PedroLamas.GDrive.ViewModel
 
                     e.Cancel = true;
                 }
-                else if (_mainModel.CurrentAccount.PathBreadcrumbs.Count > 0)
+                else if (_mainModel.TryPop(out item))
                 {
                     AbortCurrentCall();
-
-                    _mainModel.CurrentAccount.PathBreadcrumbs.Pop();
 
                     RaisePropertyChanged(() => CurrentPath);
 
@@ -303,15 +299,11 @@ namespace PedroLamas.GDrive.ViewModel
 
             if (fileViewModel.IsFolder)
             {
-                _mainModel.CurrentAccount.PathBreadcrumbs.Push(fileViewModel.ChildModel);
+                _mainModel.Push(fileViewModel.FileModel);
 
                 RaisePropertyChanged(() => CurrentPath);
 
                 RefreshFiles();
-            }
-            else
-            {
-
             }
         }
 
@@ -371,7 +363,7 @@ namespace PedroLamas.GDrive.ViewModel
                         {
                             Filename = System.IO.Path.GetFileName(result.OriginalFileName),
                             FileContent = result.ChosenPhoto.ToArray(),
-                            FolderId = _mainModel.CurrentAccount.CurrentFolder.Id,
+                            FolderId = _mainModel.CurrentFolderId,
                             Fields = GoogleDriveFileFields
                         }, callback, state);
                     }, result2 =>
@@ -384,14 +376,7 @@ namespace PedroLamas.GDrive.ViewModel
                             case ResultStatus.Completed:
                                 _systemTrayService.HideProgressIndicator();
 
-                                var files = _mainModel.CurrentAccount.Files;
-
-                                lock (files)
-                                {
-                                    files.SetValue(result2.Data.Id, result2.Data);
-                                }
-
-                                var googleFileViewModel = new GoogleFileViewModel(null, result2.Data);
+                                var googleFileViewModel = new GoogleFileViewModel(result2.Data);
 
                                 Files.Add(googleFileViewModel);
 
@@ -416,9 +401,9 @@ namespace PedroLamas.GDrive.ViewModel
 
         private void RefreshFiles()
         {
-            var currentFolder = _mainModel.CurrentAccount.CurrentFolder;
+            var currentFolderId = _mainModel.CurrentFolderId;
 
-            _mainModel.CheckTokenAndExecute<GoogleDriveChildrenListResponse>((authToken, callback, state) =>
+            _mainModel.CheckTokenAndExecute<GoogleDriveFilesListResponse>((authToken, callback, state) =>
             {
                 AbortCurrentCall();
 
@@ -427,15 +412,15 @@ namespace PedroLamas.GDrive.ViewModel
                 Files.Clear();
                 PictureFiles.Clear();
 
-                _asyncHandle = _googleDriveService.ChildrenList(authToken, new GoogleDriveChildrenListRequest()
+                _asyncHandle = _googleDriveService.FilesList(authToken, new GoogleDriveFilesListRequest()
                 {
-                    FolderId = currentFolder.Id,
-                    Fields = GoogleDriveChildrenFields
+                    Query = "'{0}' in parents".FormatWith(currentFolderId),
+                    Fields = GoogleDriveFileFields
                 }, callback, state);
-            }, RefreshFilesCallback, new RefreshFilesState(currentFolder, true));
+            }, RefreshFilesCallback, new RefreshFilesState(currentFolderId, true));
         }
 
-        private void RefreshFilesCallback(Result<GoogleDriveChildrenListResponse> result)
+        private void RefreshFilesCallback(Result<GoogleDriveFilesListResponse> result)
         {
             switch (result.Status)
             {
@@ -444,7 +429,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                 case ResultStatus.Completed:
                     var state = (RefreshFilesState)result.State;
-                    var currentFolder = state.CurrentFolder;
+                    var currentFolderId = state.CurrentFolderId;
 
                     var response = result.Data;
 
@@ -452,15 +437,11 @@ namespace PedroLamas.GDrive.ViewModel
                     {
                         foreach (var child in response.Items)
                         {
-                            GoogleDriveFile file = null;
-
-                            _mainModel.CurrentAccount.Files.TryGetValue(child.Id, out file);
-
-                            var googleFileViewModel = new GoogleFileViewModel(child, file);
+                            var googleFileViewModel = new GoogleFileViewModel(child);
 
                             Files.Add(googleFileViewModel);
 
-                            if (file != null && !string.IsNullOrEmpty(file.ThumbnailLink))
+                            if (child != null && !string.IsNullOrEmpty(child.ThumbnailLink))
                             {
                                 PictureFiles.Add(googleFileViewModel);
                             }
@@ -469,25 +450,19 @@ namespace PedroLamas.GDrive.ViewModel
 
                     if (string.IsNullOrEmpty(response.NextPageToken))
                     {
-                        var fileViewModelsArray = Files
-                            .Where(x => x.FileModel == null)
-                            .ToArray();
-
-                        LoadNextFile(fileViewModelsArray
-                            .Cast<GoogleFileViewModel>()
-                            .GetEnumerator());
+                        _systemTrayService.HideProgressIndicator();
                     }
                     else
                     {
-                        _mainModel.CheckTokenAndExecute<GoogleDriveChildrenListResponse>((authToken, callback, state2) =>
+                        _mainModel.CheckTokenAndExecute<GoogleDriveFilesListResponse>((authToken, callback, state2) =>
                         {
-                            _asyncHandle = _googleDriveService.ChildrenList(authToken, new GoogleDriveChildrenListRequest()
+                            _asyncHandle = _googleDriveService.FilesList(authToken, new GoogleDriveFilesListRequest()
                             {
-                                FolderId = _mainModel.CurrentAccount.CurrentFolder.Id,
-                                Fields = GoogleDriveChildrenFields,
+                                Query = "'{0}' in parents".FormatWith(currentFolderId),
+                                Fields = GoogleDriveFileFields,
                                 PageToken = response.NextPageToken
                             }, callback, state2);
-                        }, RefreshFilesCallback, new RefreshFilesState(currentFolder));
+                        }, RefreshFilesCallback, new RefreshFilesState(currentFolderId));
                     }
 
                     break;
@@ -567,73 +542,6 @@ namespace PedroLamas.GDrive.ViewModel
             }
         }
 
-        private void LoadNextFile(IEnumerator<GoogleFileViewModel> enumerator)
-        {
-            if (enumerator.MoveNext())
-            {
-                var fileViewModel = enumerator.Current;
-                var fileId = fileViewModel.Id;
-
-                _mainModel.CheckTokenAndExecute<GoogleDriveFile>((authToken, callback, state) =>
-                {
-                    _systemTrayService.SetProgressIndicator(string.Format("Loading file info...", fileId));
-
-                    _asyncHandle = _googleDriveService.FilesGet(authToken, new GoogleDriveFilesGetRequest()
-                    {
-                        FileId = fileId,
-                        Fields = GoogleDriveFileFields
-                    }, callback, state);
-                }, result =>
-                {
-                    DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                    {
-                        switch (result.Status)
-                        {
-                            case ResultStatus.Aborted:
-                                enumerator.Dispose();
-
-                                break;
-
-                            case ResultStatus.Completed:
-                                var files = _mainModel.CurrentAccount.Files;
-
-                                lock (files)
-                                {
-                                    files.SetValue(fileViewModel.Id, result.Data);
-                                }
-
-                                fileViewModel.FileModel = result.Data;
-
-                                if (!string.IsNullOrEmpty(fileViewModel.ThumbnailLink))
-                                {
-                                    PictureFiles.Add(fileViewModel);
-                                }
-
-                                LoadNextFile(enumerator);
-
-                                break;
-
-                            default:
-                                enumerator.Dispose();
-
-                                _systemTrayService.HideProgressIndicator();
-
-                                _messageBoxService.Show(string.Format("Unable to load \"{0}\"!", fileId), "Error");
-
-                                break;
-                        }
-
-                    });
-                }, null);
-            }
-            else
-            {
-                enumerator.Dispose();
-
-                _systemTrayService.HideProgressIndicator();
-            }
-        }
-
         private void AbortCurrentCall()
         {
             AbortCurrentCall(false);
@@ -654,19 +562,19 @@ namespace PedroLamas.GDrive.ViewModel
             _asyncHandle = null;
         }
 
-        private class DeleteFilesState
-        {
-            #region Properties
+        //private class DeleteFilesState
+        //{
+        //    #region Properties
 
-            public GoogleDriveChild CurrentFolder { get; private set; }
+        //    public GoogleDriveChild CurrentFolder { get; private set; }
 
-            #endregion
+        //    #endregion
 
-            public DeleteFilesState(GoogleDriveChild currentFolder)
-            {
-                CurrentFolder = currentFolder;
-            }
-        }
+        //    public DeleteFilesState(GoogleDriveChild currentFolder)
+        //    {
+        //        CurrentFolder = currentFolder;
+        //    }
+        //}
 
         private class RefreshFilesState
         {
@@ -674,18 +582,18 @@ namespace PedroLamas.GDrive.ViewModel
 
             public bool FirstCall { get; private set; }
 
-            public GoogleDriveChild CurrentFolder { get; set; }
+            public string CurrentFolderId { get; private set; }
 
             #endregion
 
-            public RefreshFilesState(GoogleDriveChild currentFolder, bool firstCall)
+            public RefreshFilesState(string currentFolderId, bool firstCall)
             {
-                CurrentFolder = currentFolder;
+                CurrentFolderId = currentFolderId;
                 FirstCall = firstCall;
             }
 
-            public RefreshFilesState(GoogleDriveChild currentFolder)
-                : this(currentFolder, false)
+            public RefreshFilesState(string currentFolderId)
+                : this(currentFolderId, false)
             {
             }
         }

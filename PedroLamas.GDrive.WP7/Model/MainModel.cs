@@ -4,6 +4,7 @@ using Cimbalino.Phone.Toolkit.Services;
 using Newtonsoft.Json;
 using PedroLamas.GDrive.Service;
 using PedroLamas.ServiceModel;
+using System.Linq;
 
 namespace PedroLamas.GDrive.Model
 {
@@ -15,6 +16,8 @@ namespace PedroLamas.GDrive.Model
         private readonly IStorageService _storageService;
         private readonly ISystemTrayService _systemTrayService;
 
+        private readonly GoogleDriveBreadcrumbs _breadcrumbs = new GoogleDriveBreadcrumbs();
+
         private readonly object _lock = new object();
 
         #region Properties
@@ -24,6 +27,34 @@ namespace PedroLamas.GDrive.Model
         public AccountModel CurrentAccount { get; set; }
 
         public bool ExecuteInitialLoad { get; set; }
+
+        public GoogleDriveFile CurrentFolder
+        {
+            get
+            {
+                GoogleDriveFile folder;
+
+                return _breadcrumbs.TryPeek(out folder) ? folder : null;
+            }
+        }
+
+        public string CurrentFolderId
+        {
+            get
+            {
+                GoogleDriveFile folder;
+
+                return _breadcrumbs.TryPeek(out folder) ? folder.Id : CurrentAccount.Info.RootFolderId;
+            }
+        }
+
+        public string CurrentPath
+        {
+            get
+            {
+                return _breadcrumbs.CurrentPath;
+            }
+        }
 
         #endregion
 
@@ -76,17 +107,44 @@ namespace PedroLamas.GDrive.Model
             }
         }
 
-        private void Load()
+        public void Clear()
         {
-            if (_storageService.FileExists(FILENAME))
-                AvailableAccounts = JsonConvert.DeserializeObject<List<AccountModel>>(_storageService.ReadAllText(FILENAME));
-            else
-                AvailableAccounts = new List<AccountModel>();
+            _breadcrumbs.Clear();
+        }
+
+        public void Push(GoogleDriveFile item)
+        {
+            _breadcrumbs.Push(item);
+        }
+
+        public bool TryPeek(out GoogleDriveFile item)
+        {
+            return _breadcrumbs.TryPeek(out item);
+        }
+
+        public bool TryPop(out GoogleDriveFile item)
+        {
+            return _breadcrumbs.TryPop(out item);
         }
 
         public void Save()
         {
-            _storageService.WriteAllText(FILENAME, JsonConvert.SerializeObject(AvailableAccounts));
+            lock (_lock)
+            {
+                _storageService.WriteAllText(FILENAME, JsonConvert.SerializeObject(AvailableAccounts));
+            }
+        }
+
+        private void Load()
+        {
+            if (_storageService.FileExists(FILENAME))
+            {
+                AvailableAccounts = JsonConvert.DeserializeObject<List<AccountModel>>(_storageService.ReadAllText(FILENAME));
+            }
+            else
+            {
+                AvailableAccounts = new List<AccountModel>();
+            }
         }
     }
 }

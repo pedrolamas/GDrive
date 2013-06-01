@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Data;
+using Cimbalino.Phone.Toolkit.Extensions;
 using GalaSoft.MvvmLight;
 using PedroLamas.GDrive.Service;
 
@@ -7,14 +8,12 @@ namespace PedroLamas.GDrive.ViewModel
 {
     public class GoogleFileViewModel : ViewModelBase
     {
-        private static readonly string[] _availableSuffixes = new string[] { "B", "KB", "MB", "GB", "TB" };
+        private static readonly string[] _availableSuffixes = new[] { "B", "KB", "MB", "GB", "TB" };
         private static readonly IValueConverter _dateTimeConverter = new Microsoft.Phone.Controls.ListViewDateTimeConverter();
 
         private GoogleDriveFile _fileModel;
 
         #region Properties
-
-        public GoogleDriveChild ChildModel { get; private set; }
 
         public GoogleDriveFile FileModel
         {
@@ -24,17 +23,17 @@ namespace PedroLamas.GDrive.ViewModel
             }
             set
             {
-                if (_fileModel == value)
-                    return;
+                if (_fileModel != value)
+                {
+                    _fileModel = value;
 
-                _fileModel = value;
-
-                RaisePropertyChanged(() => FileModel);
-                RaisePropertyChanged(() => Title);
-                RaisePropertyChanged(() => Description);
-                RaisePropertyChanged(() => Starred);
-                RaisePropertyChanged(() => Icon);
-                RaisePropertyChanged(() => ThumbnailLink);
+                    RaisePropertyChanged(() => FileModel);
+                    RaisePropertyChanged(() => Title);
+                    RaisePropertyChanged(() => Description);
+                    RaisePropertyChanged(() => Starred);
+                    RaisePropertyChanged(() => Icon);
+                    RaisePropertyChanged(() => ThumbnailLink);
+                }
             }
         }
 
@@ -42,11 +41,6 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                if (_fileModel == null)
-                {
-                    return ChildModel.Id;
-                }
-
                 return _fileModel.Id;
             }
         }
@@ -55,9 +49,6 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                if (_fileModel == null)
-                    return false;
-
                 return string.Equals(_fileModel.MimeType, GoogleDriveFile.FolderMimeType, StringComparison.OrdinalIgnoreCase);
             }
         }
@@ -66,11 +57,6 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                if (_fileModel == null)
-                {
-                    return ChildModel.Id;
-                }
-
                 return _fileModel.Title;
             }
         }
@@ -87,7 +73,7 @@ namespace PedroLamas.GDrive.ViewModel
                 if (_fileModel.FileSize.HasValue)
                 {
                     var size = _fileModel.FileSize.Value;
-                    var sizeString = "";
+                    string sizeString;
 
                     if (size <= 1024)
                     {
@@ -107,7 +93,7 @@ namespace PedroLamas.GDrive.ViewModel
                             suffixIndex++;
                         }
 
-                        sizeString = string.Format("{0} {1}", size.ToString(), _availableSuffixes[suffixIndex]);
+                        sizeString = "{0} {1}".FormatWithInvariantCulture(size, _availableSuffixes[suffixIndex]);
                     }
 
                     return string.Format("Modified: {0}  Size: {1}", dateString, sizeString);
@@ -121,7 +107,7 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                if (_fileModel == null || _fileModel.Labels == null || !_fileModel.Labels.Starred.HasValue)
+                if (_fileModel.Labels == null || !_fileModel.Labels.Starred.HasValue)
                     return false;
 
                 return _fileModel.Labels.Starred.Value;
@@ -195,22 +181,14 @@ namespace PedroLamas.GDrive.ViewModel
         {
             get
             {
-                if (_fileModel == null)
-                    return null;
-
                 return _fileModel.ThumbnailLink;
             }
         }
 
         #endregion
 
-        public GoogleFileViewModel(GoogleDriveChild childModel)
-            : this(childModel, null)
+        public GoogleFileViewModel(GoogleDriveFile fileModel)
         {
-        }
-        public GoogleFileViewModel(GoogleDriveChild childModel, GoogleDriveFile fileModel)
-        {
-            ChildModel = childModel;
             FileModel = fileModel;
         }
     }

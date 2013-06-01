@@ -171,39 +171,5 @@ namespace PedroLamas.GDrive.Service
 
             return _client.GetResultAsync(request, callback, state);
         }
-
-        public RestRequestAsyncHandle ChildrenList(GoogleAuthToken authToken, GoogleDriveChildrenListRequest childrenListRequest, ResultCallback<GoogleDriveChildrenListResponse> callback, object state)
-        {
-            var request = _googleAuthService.CreateRestRequest(authToken, "files/{folderId}/children", Method.GET);
-
-            request.AddParameter("folderId", childrenListRequest.FolderId);
-
-            if (childrenListRequest.MaxResults.HasValue)
-            {
-                request.AddUrlSegment("maxResults", childrenListRequest.MaxResults.Value.ToString());
-            }
-
-            if (!string.IsNullOrEmpty(childrenListRequest.PageToken))
-            {
-                request.AddUrlSegment("pageToken", childrenListRequest.PageToken);
-            }
-
-            if (!string.IsNullOrEmpty(childrenListRequest.Query))
-            {
-                request.AddUrlSegment("q", childrenListRequest.Query);
-            }
-
-            if (!string.IsNullOrEmpty(childrenListRequest.Fields))
-            {
-                request.AddUrlSegment("fields", childrenListRequest.Fields);
-            }
-
-            if (!string.IsNullOrEmpty(childrenListRequest.ETag))
-            {
-                request.AddHeader("If-None-Match", childrenListRequest.ETag);
-            }
-
-            return _client.GetResultAsync(request, callback, state);
-        }
     }
 }
