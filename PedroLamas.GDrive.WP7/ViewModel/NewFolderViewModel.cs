@@ -1,10 +1,10 @@
 ﻿using System.Linq;
+using System.Threading;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using PedroLamas.GDrive.Model;
 using PedroLamas.GDrive.Service;
-using PedroLamas.ServiceModel;
 
 namespace PedroLamas.GDrive.ViewModel
 {
@@ -81,40 +81,24 @@ namespace PedroLamas.GDrive.ViewModel
             }, () => !IsBusy);
         }
 
-        private void CreateNewFolder()
+        private async void CreateNewFolder()
         {
             _systemTrayService.SetProgressIndicator("Creating new folder...");
 
-            _mainModel.CheckTokenAndExecute<GoogleDriveFile>((authToken, callback, state) =>
+            await _mainModel.CheckToken(CancellationToken.None);
+
+            var file = await _googleDriveService.FilesInsert(_mainModel.CurrentAccount.AuthToken, new GoogleDriveFilesInsertRequest()
             {
-                _googleDriveService.FilesInsert(authToken, new GoogleDriveFilesInsertRequest()
-                {
-                    Filename = FolderName,
-                    FolderId = _mainModel.CurrentFolderId,
-                    Fields = GoogleDriveFileFields
-                }, callback, state);
-            }, result =>
-            {
-                _systemTrayService.HideProgressIndicator();
+                Filename = FolderName,
+                FolderId = _mainModel.CurrentFolderId,
+                Fields = GoogleDriveFileFields
+            }, CancellationToken.None);
 
-                switch (result.Status)
-                {
-                    case ResultStatus.Completed:
-                    case ResultStatus.Empty:
-                        FolderName = "";
+            FolderName = string.Empty;
 
-                        MessengerInstance.Send(new RefreshFilesMessage());
+            MessengerInstance.Send(new RefreshFilesMessage());
 
-                        _navigationService.GoBack();
-
-                        break;
-
-                    default:
-                        _messageBoxService.Show("Unable to create the new folder!", "Error");
-
-                        break;
-                }
-            }, null);
+            _navigationService.GoBack();
         }
     }
 }

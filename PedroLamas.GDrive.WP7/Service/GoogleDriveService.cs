@@ -1,40 +1,45 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Cimbalino.Phone.Toolkit.Extensions;
 using Newtonsoft.Json;
 using PedroLamas.GDrive.Helpers;
-using PedroLamas.ServiceModel;
-using RestSharp;
 
 namespace PedroLamas.GDrive.Service
 {
     public class GoogleDriveService : IGoogleDriveService
     {
+        private const string JsonContentType = "application/json";
+        
         private readonly IGoogleAuthService _googleAuthService;
 
-        private readonly RestClient _client;
-        private readonly RestClient _clientForUploads;
+        private readonly HttpClient _client;
+        private readonly HttpClient _clientForUploads;
 
         public GoogleDriveService(IGoogleAuthService googleAuthService)
         {
             _googleAuthService = googleAuthService;
 
-            _client = googleAuthService.CreateRestClient("https://www.googleapis.com/drive/v2");
-            _clientForUploads = googleAuthService.CreateRestClient("https://www.googleapis.com/upload/drive/v2");
+            _client = googleAuthService.CreateRestClient("https://www.googleapis.com/drive/v2/");
+            _clientForUploads = googleAuthService.CreateRestClient("https://www.googleapis.com/upload/drive/v2/");
         }
 
-        public RestRequestAsyncHandle About(GoogleAuthToken authToken, GoogleDriveAboutRequest aboutRequest, ResultCallback<GoogleDriveAbout> callback, object state)
+        public Task<GoogleDriveAbout> About(GoogleAuthToken authToken, GoogleDriveAboutRequest aboutRequest, CancellationToken cancellationToken)
         {
-            var request = _googleAuthService.CreateRestRequest(authToken, "about", Method.GET);
+            var request = _googleAuthService.CreateRestRequest(authToken, "about", HttpMethod.Get);
 
             if (!string.IsNullOrEmpty(aboutRequest.ETag))
             {
-                request.AddHeader("If-None-Match", aboutRequest.ETag);
+                request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(aboutRequest.ETag));
             }
 
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveAbout>(request, cancellationToken);
         }
 
-        public RestRequestAsyncHandle FilesInsert(GoogleAuthToken authToken, GoogleDriveFilesInsertRequest filesInsertRequest, ResultCallback<GoogleDriveFile> callback, object state)
+        public Task<GoogleDriveFile> FilesInsert(GoogleAuthToken authToken, GoogleDriveFilesInsertRequest filesInsertRequest, CancellationToken cancellationToken)
         {
             var queryStringValues = new Dictionary<string, string>();
 
@@ -53,8 +58,6 @@ namespace PedroLamas.GDrive.Service
                 queryStringValues.Add("fields", filesInsertRequest.Fields);
             }
 
-            var request = _googleAuthService.CreateRestRequest(authToken, "files" + queryStringValues.ToQueryString(), Method.POST);
-
             var metadata = new GoogleDriveFile()
             {
                 Title = filesInsertRequest.Filename,
@@ -68,25 +71,42 @@ namespace PedroLamas.GDrive.Service
 
             if (filesInsertRequest.FileContent == null)
             {
-                request.AddBody(metadata);
+                var request = _googleAuthService.CreateRestRequest(authToken, "files" + queryStringValues.ToQueryString(), HttpMethod.Post);
 
-                return _client.GetResultAsync(request, callback, state);
+                request.Content = new StringContent(JsonConvert.SerializeObject(metadata), Encoding.UTF8, JsonContentType);
+
+                return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
             }
-            
-            request.AddUrlSegment("uploadType", "multipart");
-
-            var metadataBytes = JsonConvert.SerializeObject(metadata, new JsonSerializerSettings()
+            else
             {
-                NullValueHandling = NullValueHandling.Ignore
-            }).GetBytes();
+                queryStringValues.Add("uploadType", "multipart");
 
-            request.AddFile(null, metadataBytes, null, "application/json");
-            request.AddFile(null, filesInsertRequest.FileContent, null, filesInsertRequest.ContentType);
+                var request = _googleAuthService.CreateRestRequest(authToken, "files" + queryStringValues.ToQueryString(), HttpMethod.Post);
 
-            return _clientForUploads.GetResultAsync(request, callback, state);
+                var metadataBytes = JsonConvert.SerializeObject(metadata, new JsonSerializerSettings()
+                {
+                    NullValueHandling = NullValueHandling.Ignore
+                }).GetBytes();
+
+                var metadataContent = new ByteArrayContent(metadataBytes);
+
+                metadataContent.Headers.ContentType = new MediaTypeHeaderValue(JsonContentType);
+
+                var fileContent = new ByteArrayContent(filesInsertRequest.FileContent);
+
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(filesInsertRequest.ContentType);
+
+                request.Content = new MultipartFormDataContent
+                {
+                    metadataContent,
+                    fileContent
+                };
+
+                return _clientForUploads.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
+            }
         }
 
-        public RestRequestAsyncHandle FilesGet(GoogleAuthToken authToken, GoogleDriveFilesGetRequest filesGetRequest, ResultCallback<GoogleDriveFile> callback, object state)
+        public Task<GoogleDriveFile> FilesGet(GoogleAuthToken authToken, GoogleDriveFilesGetRequest filesGetRequest, CancellationToken cancellationToken)
         {
             var queryStringValues = new Dictionary<string, string>();
 
@@ -95,19 +115,17 @@ namespace PedroLamas.GDrive.Service
                 queryStringValues.Add("fields", filesGetRequest.Fields);
             }
 
-            var request = _googleAuthService.CreateRestRequest(authToken, "files/{fileId}" + queryStringValues.ToQueryString(), Method.GET);
-
-            request.AddUrlSegment("fileId", filesGetRequest.FileId);
+            var request = _googleAuthService.CreateRestRequest(authToken, "files/" + filesGetRequest.FileId + queryStringValues.ToQueryString(), HttpMethod.Get);
 
             if (!string.IsNullOrEmpty(filesGetRequest.ETag))
             {
-                request.AddHeader("If-None-Match", filesGetRequest.ETag);
+                request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(filesGetRequest.ETag));
             }
 
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
         }
 
-        public RestRequestAsyncHandle FilesList(GoogleAuthToken authToken, GoogleDriveFilesListRequest filesListRequest, ResultCallback<GoogleDriveFilesListResponse> callback, object state)
+        public Task<GoogleDriveFilesListResponse> FilesList(GoogleAuthToken authToken, GoogleDriveFilesListRequest filesListRequest, CancellationToken cancellationToken)
         {
             var queryStringValues = new Dictionary<string, string>();
 
@@ -136,35 +154,31 @@ namespace PedroLamas.GDrive.Service
                 queryStringValues.Add("fields", filesListRequest.Fields);
             }
 
-            var request = _googleAuthService.CreateRestRequest(authToken, "files" + queryStringValues.ToQueryString(), Method.GET);
+            var request = _googleAuthService.CreateRestRequest(authToken, "files" + queryStringValues.ToQueryString(), HttpMethod.Get);
 
             if (!string.IsNullOrEmpty(filesListRequest.ETag))
             {
-                request.AddHeader("If-None-Match", filesListRequest.ETag);
+                request.Headers.IfNoneMatch.Add(new EntityTagHeaderValue(filesListRequest.ETag));
             }
 
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveFilesListResponse>(request, cancellationToken);
         }
 
-        public RestRequestAsyncHandle FilesDelete(GoogleAuthToken authToken, string fileId, ResultCallback<GoogleDriveFile> callback, object state)
+        public Task<GoogleDriveFile> FilesDelete(GoogleAuthToken authToken, string fileId, CancellationToken cancellationToken)
         {
-            var request = _googleAuthService.CreateRestRequest(authToken, "files/{fileId}", Method.DELETE);
+            var request = _googleAuthService.CreateRestRequest(authToken, "files/" + fileId, HttpMethod.Delete);
 
-            request.AddUrlSegment("fileId", fileId);
-
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
         }
 
-        public RestRequestAsyncHandle FilesTrash(GoogleAuthToken authToken, string fileId, ResultCallback<GoogleDriveFile> callback, object state)
+        public Task<GoogleDriveFile> FilesTrash(GoogleAuthToken authToken, string fileId, CancellationToken cancellationToken)
         {
-            var request = _googleAuthService.CreateRestRequest(authToken, "files/{fileId}/trash", Method.POST);
+            var request = _googleAuthService.CreateRestRequest(authToken, "files/" + fileId + "/trash", HttpMethod.Post);
 
-            request.AddUrlSegment("fileId", fileId);
-
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
         }
 
-        public RestRequestAsyncHandle FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, ResultCallback<GoogleDriveFile> callback, object state)
+        public Task<GoogleDriveFile> FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, CancellationToken cancellationToken)
         {
             var queryStringValues = new Dictionary<string, string>();
 
@@ -173,13 +187,11 @@ namespace PedroLamas.GDrive.Service
                 queryStringValues.Add("fields", filesUpdateRequest.Fields);
             }
 
-            var request = _googleAuthService.CreateRestRequest(authToken, "files/{fileId}" + queryStringValues.ToQueryString(), Method.PUT);
+            var request = _googleAuthService.CreateRestRequest(authToken, "files/" + fileId + queryStringValues.ToQueryString(), HttpMethod.Put);
 
-            request.AddUrlSegment("fileId", fileId);
+            request.Content = new StringContent(JsonConvert.SerializeObject(filesUpdateRequest.File), Encoding.UTF8, JsonContentType);
 
-            request.AddBody(filesUpdateRequest.File);
-
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
         }
     }
 }

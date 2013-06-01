@@ -1,6 +1,7 @@
 using System;
-using PedroLamas.ServiceModel;
-using RestSharp;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PedroLamas.GDrive.Service
 {
@@ -8,14 +9,14 @@ namespace PedroLamas.GDrive.Service
     {
         Uri GetAuthUri();
 
-        RestRequestAsyncHandle ExchangeAuthorizationCode(string code, ResultCallback<GoogleAuthToken> callback, object state);
+        Task<GoogleAuthToken> ExchangeAuthorizationCode(string code, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle RefreshToken(GoogleAuthToken authToken, ResultCallback<GoogleAuthToken> callback, object state);
+        Task<GoogleAuthToken> RefreshToken(GoogleAuthToken authToken, CancellationToken cancellationToken);
 
-        RestClient CreateRestClient(string baseUrl);
+        HttpClient CreateRestClient(string baseUrl);
 
-        RestRequest CreateRestRequest(GoogleAuthToken authToken, string resource, Method method);
+        HttpRequestMessage CreateRestRequest(GoogleAuthToken authToken, string resource, HttpMethod method);
 
-        void CheckTokenAndExecute<T>(GoogleAuthToken authToken, ResultCallback<T> callback, Action successAction, object state);
+        //Task<T> CheckTokenAndExecute<T>(GoogleAuthToken authToken, Action successAction, CancellationToken cancellationToken);
     }
 }

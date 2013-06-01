@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using PedroLamas.GDrive.Service;
-using PedroLamas.ServiceModel;
 
 namespace PedroLamas.GDrive.Model
 {
@@ -19,7 +19,7 @@ namespace PedroLamas.GDrive.Model
 
         string CurrentPath { get; }
 
-        void CheckTokenAndExecute<T>(Action<GoogleAuthToken, ResultCallback<T>, object> action, ResultCallback<T> callback, object state);
+        Task CheckToken(CancellationToken cancellationToken);
 
         void Clear();
 

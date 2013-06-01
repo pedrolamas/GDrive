@@ -1,22 +1,22 @@
-using PedroLamas.ServiceModel;
-using RestSharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PedroLamas.GDrive.Service
 {
     public interface IGoogleDriveService
     {
-        RestRequestAsyncHandle About(GoogleAuthToken authToken, GoogleDriveAboutRequest aboutRequest, ResultCallback<GoogleDriveAbout> callback, object state);
+        Task<GoogleDriveAbout> About(GoogleAuthToken authToken, GoogleDriveAboutRequest aboutRequest, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesInsert(GoogleAuthToken authToken, GoogleDriveFilesInsertRequest filesInsertRequest, ResultCallback<GoogleDriveFile> callback, object state);
+        Task<GoogleDriveFile> FilesInsert(GoogleAuthToken authToken, GoogleDriveFilesInsertRequest filesInsertRequest, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesGet(GoogleAuthToken authToken, GoogleDriveFilesGetRequest filesGetRequest, ResultCallback<GoogleDriveFile> callback, object state);
+        Task<GoogleDriveFile> FilesGet(GoogleAuthToken authToken, GoogleDriveFilesGetRequest filesGetRequest, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesList(GoogleAuthToken authToken, GoogleDriveFilesListRequest filesListRequest, ResultCallback<GoogleDriveFilesListResponse> callback, object state);
+        Task<GoogleDriveFilesListResponse> FilesList(GoogleAuthToken authToken, GoogleDriveFilesListRequest filesListRequest, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesDelete(GoogleAuthToken authToken, string fileId, ResultCallback<GoogleDriveFile> callback, object state);
+        Task<GoogleDriveFile> FilesDelete(GoogleAuthToken authToken, string fileId, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesTrash(GoogleAuthToken authToken, string fileId, ResultCallback<GoogleDriveFile> callback, object state);
+        Task<GoogleDriveFile> FilesTrash(GoogleAuthToken authToken, string fileId, CancellationToken cancellationToken);
 
-        RestRequestAsyncHandle FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, ResultCallback<GoogleDriveFile> callback, object state);
+        Task<GoogleDriveFile> FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, CancellationToken cancellationToken);
     }
 }

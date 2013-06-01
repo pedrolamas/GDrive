@@ -1,5 +1,7 @@
-﻿using PedroLamas.ServiceModel;
-using RestSharp;
+﻿using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using PedroLamas.GDrive.Helpers;
 
 namespace PedroLamas.GDrive.Service
 {
@@ -7,7 +9,7 @@ namespace PedroLamas.GDrive.Service
     {
         private readonly IGoogleAuthService _googleAuthService;
 
-        private readonly RestClient _client;
+        private readonly HttpClient _client;
 
         public GoogleOAuth2Service(IGoogleAuthService googleAuthService)
         {
@@ -16,11 +18,11 @@ namespace PedroLamas.GDrive.Service
             _client = googleAuthService.CreateRestClient("https://www.googleapis.com/oauth2/v2/");
         }
 
-        public RestRequestAsyncHandle GetUserInfo(GoogleAuthToken authToken, ResultCallback<GoogleUserInfoResponse> callback, object state)
+        public Task<GoogleUserInfoResponse> GetUserInfo(GoogleAuthToken authToken, CancellationToken cancellationToken)
         {
-            var request = _googleAuthService.CreateRestRequest(authToken, "userinfo", Method.GET);
+            var request = _googleAuthService.CreateRestRequest(authToken, "userinfo", HttpMethod.Get);
 
-            return _client.GetResultAsync(request, callback, state);
+            return _client.SendAndDeserialize<GoogleUserInfoResponse>(request, cancellationToken);
         }
     }
 }

@@ -1,10 +1,10 @@
-using PedroLamas.ServiceModel;
-using RestSharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace PedroLamas.GDrive.Service
 {
     public interface IGoogleOAuth2Service
     {
-        RestRequestAsyncHandle GetUserInfo(GoogleAuthToken authToken, ResultCallback<GoogleUserInfoResponse> callback, object state);
+        Task<GoogleUserInfoResponse> GetUserInfo(GoogleAuthToken authToken, CancellationToken cancellationToken);
     }
 }

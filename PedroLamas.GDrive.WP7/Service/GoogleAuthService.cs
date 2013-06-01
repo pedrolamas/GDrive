@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using PedroLamas.GDrive.Helpers;
-using PedroLamas.ServiceModel;
-using RestSharp;
 
 namespace PedroLamas.GDrive.Service
 {
     public class GoogleAuthService : IGoogleAuthService
     {
-        private const int SAFE_EXPIRATION_WINDOW = 60;
+        private const int SafeExpirationWindow = 60;
 
         private readonly IGoogleClientSettings _clientSettings;
 
-        private readonly RestClient _client;
+        private readonly HttpClient _client;
 
         public GoogleAuthService(IGoogleClientSettings clientSettings)
         {
@@ -33,105 +35,80 @@ namespace PedroLamas.GDrive.Service
                 {"approval_prompt", "force"},
             };
 
-            var completeUrl = "https://accounts.google.com/o/oauth2/auth?" + queryStringValues.ToQueryString();
+            var completeUrl = "https://accounts.google.com/o/oauth2/auth" + queryStringValues.ToQueryString();
 
             return new Uri(completeUrl);
         }
 
-        public RestRequestAsyncHandle ExchangeAuthorizationCode(string code, ResultCallback<GoogleAuthToken> callback, object state)
+        public async Task<GoogleAuthToken> ExchangeAuthorizationCode(string code, CancellationToken cancellationToken)
         {
-            var request = new RestRequest(Method.POST);
-
-            request.AddParameter("code", code);
-            request.AddParameter("client_id", _clientSettings.ClientId);
-            request.AddParameter("client_secret", _clientSettings.ClientSecret);
-            request.AddParameter("redirect_uri", "http://localhost");
-            request.AddParameter("grant_type", "authorization_code");
-
-            return _client.GetResultAsync<GoogleAuthToken>(request, result =>
+            var formPostValues = new Dictionary<string, string>
             {
-                if (result.Data != null)
-                {
-                    var newAuthToken = result.Data;
-
-                    newAuthToken.ExpiresDateTime = DateTime.Now.AddSeconds(newAuthToken.ExpiresIn - SAFE_EXPIRATION_WINDOW);
-                }
-
-                callback(result);
-            }, state);
-        }
-
-        public RestRequestAsyncHandle RefreshToken(GoogleAuthToken authToken, ResultCallback<GoogleAuthToken> callback, object state)
-        {
-            var request = new RestRequest(Method.POST);
-
-            request.AddParameter("client_id", _clientSettings.ClientId);
-            request.AddParameter("client_secret", _clientSettings.ClientSecret);
-            request.AddParameter("refresh_token", authToken.RefreshToken);
-            request.AddParameter("grant_type", "refresh_token");
-
-            return _client.GetResultAsync<GoogleAuthToken>(request, result =>
-            {
-                if (result.Data != null)
-                {
-                    var newAuthToken = result.Data;
-
-                    newAuthToken.RefreshToken = authToken.RefreshToken;
-                    newAuthToken.ExpiresDateTime = DateTime.Now.AddSeconds(newAuthToken.ExpiresIn - SAFE_EXPIRATION_WINDOW);
-                }
-
-                callback(result);
-            }, state);
-        }
-
-        public RestClient CreateRestClient(string baseUrl)
-        {
-            var client = new RestClient(baseUrl)
-            {
-                UserAgent = "GDrive (gzip)"
+                { "code", code },
+                { "client_id", _clientSettings.ClientId },
+                { "client_secret", _clientSettings.ClientSecret },
+                { "redirect_uri", "http://localhost" },
+                { "grant_type", "authorization_code" }
             };
 
-            client.AddDefaultHeader("Accept-Encoding", "gzip");
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new FormUrlEncodedContent(formPostValues)
+            };
+
+            var result = await _client.SendAndDeserialize<GoogleAuthToken>(requestMessage, cancellationToken);
+
+            result.ExpiresDateTime = DateTime.Now.AddSeconds(result.ExpiresIn - SafeExpirationWindow);
+
+            return result;
+        }
+
+        public async Task<GoogleAuthToken> RefreshToken(GoogleAuthToken authToken, CancellationToken cancellationToken)
+        {
+            var formPostValues = new Dictionary<string, string>
+            {
+                { "client_id", _clientSettings.ClientId },
+                { "client_secret", _clientSettings.ClientSecret },
+                { "refresh_token", authToken.RefreshToken },
+                { "grant_type", "refresh_token" }
+            };
+
+            var requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                Content = new FormUrlEncodedContent(formPostValues)
+            };
+
+            var result = await _client.SendAndDeserialize<GoogleAuthToken>(requestMessage, cancellationToken);
+
+            result.RefreshToken = authToken.RefreshToken;
+            result.ExpiresDateTime = DateTime.Now.AddSeconds(result.ExpiresIn - SafeExpirationWindow);
+
+            return result;
+        }
+
+        public HttpClient CreateRestClient(string baseUrl)
+        {
+            var client = new HttpClient
+            {
+                BaseAddress = new Uri(baseUrl)
+            };
+
+            //client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive (gzip)")));
+            //client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive")));
 
             return client;
         }
 
-        public RestRequest CreateRestRequest(GoogleAuthToken authToken, string resource, Method method)
+        public HttpRequestMessage CreateRestRequest(GoogleAuthToken authToken, string resource, HttpMethod method)
         {
-            var request = new RestRequest(resource, method)
-            {
-                RequestFormat = DataFormat.Json,
-                JsonSerializer = NewtonsoftJsonSerializer.StaticInstance
-            };
+            var request = new HttpRequestMessage(method, resource);
 
-            request.AddHeader("Authorization", string.Format("{0} {1}", authToken.TokenType, authToken.AccessToken));
+            request.Headers.Authorization = new AuthenticationHeaderValue(authToken.TokenType, authToken.AccessToken);
 
             return request;
-        }
-
-        public void CheckTokenAndExecute<T>(GoogleAuthToken authToken, ResultCallback<T> callback, Action successAction, object state)
-        {
-            lock (_clientSettings)
-            {
-                if (DateTime.Now > authToken.ExpiresDateTime)
-                {
-                    RefreshToken(authToken, result =>
-                    {
-                        if (result.Status != ResultStatus.Completed)
-                        {
-                            callback(new Result<T>(result.Status, state));
-                        }
-                        else
-                        {
-                            successAction();
-                        }
-                    }, state);
-                }
-                else
-                {
-                    successAction();
-                }
-            }
         }
     }
 }

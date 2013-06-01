@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Cimbalino.Phone.Toolkit.Services;
 using Newtonsoft.Json;
 using PedroLamas.GDrive.Service;
-using PedroLamas.ServiceModel;
-using System.Linq;
 
 namespace PedroLamas.GDrive.Model
 {
@@ -12,13 +12,13 @@ namespace PedroLamas.GDrive.Model
     {
         private const string FILENAME = @"data.txt";
 
+        private readonly object _lock = new object();
+
         private readonly IGoogleAuthService _googleAuthService;
         private readonly IStorageService _storageService;
         private readonly ISystemTrayService _systemTrayService;
 
         private readonly GoogleDriveBreadcrumbs _breadcrumbs = new GoogleDriveBreadcrumbs();
-
-        private readonly object _lock = new object();
 
         #region Properties
 
@@ -67,43 +67,15 @@ namespace PedroLamas.GDrive.Model
             Load();
         }
 
-        public void CheckTokenAndExecute<T>(Action<GoogleAuthToken, ResultCallback<T>, object> action, ResultCallback<T> callback, object state)
+        public async Task CheckToken(CancellationToken cancellationToken)
         {
-            lock (_lock)
+            var authToken = CurrentAccount.AuthToken;
+
+            if (DateTime.Now > authToken.ExpiresDateTime)
             {
-                var authToken = CurrentAccount.AuthToken;
+                _systemTrayService.SetProgressIndicator("Refreshing the access token...");
 
-                if (DateTime.Now > authToken.ExpiresDateTime)
-                {
-                    _systemTrayService.SetProgressIndicator("Refreshing the access token...");
-
-                    _googleAuthService.RefreshToken(authToken, result =>
-                    {
-                        try
-                        {
-                            if (result.Status != ResultStatus.Completed)
-                            {
-                                callback(new Result<T>(result.Status, result.State));
-                            }
-
-                            var newAuthToken = result.Data;
-
-                            CurrentAccount.AuthToken = newAuthToken;
-
-                            Save();
-
-                            action(newAuthToken, callback, result.State);
-                        }
-                        catch (Exception ex)
-                        {
-                            callback(new Result<T>(ex, result.State));
-                        }
-                    }, state);
-                }
-                else
-                {
-                    action(authToken, callback, state);
-                }
+                CurrentAccount.AuthToken = await _googleAuthService.RefreshToken(authToken, cancellationToken);
             }
         }
 

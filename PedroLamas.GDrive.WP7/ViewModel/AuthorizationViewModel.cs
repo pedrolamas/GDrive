@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Windows.Navigation;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
@@ -7,7 +8,6 @@ using GalaSoft.MvvmLight.Command;
 using Microsoft.Phone.Controls;
 using PedroLamas.GDrive.Model;
 using PedroLamas.GDrive.Service;
-using PedroLamas.ServiceModel;
 
 namespace PedroLamas.GDrive.ViewModel
 {
@@ -127,61 +127,38 @@ namespace PedroLamas.GDrive.ViewModel
             });
         }
 
-        private void ExchangeAuthorizationCode(string authorizationCode)
+        private async void ExchangeAuthorizationCode(string authorizationCode)
         {
-            _googleAuthService.ExchangeAuthorizationCode(authorizationCode, result =>
+            try
             {
-                switch (result.Status)
+                var authToken = await _googleAuthService.ExchangeAuthorizationCode(authorizationCode, CancellationToken.None);
+
+                var userInfo = await _googleOAuth2Service.GetUserInfo(authToken, CancellationToken.None);
+
+                _systemTrayService.HideProgressIndicator();
+
+                var email = userInfo.EMail;
+
+                var oldAccount = _mainModel.AvailableAccounts.FirstOrDefault(x => x.Name == email);
+
+                if (oldAccount != null)
                 {
-                    case ResultStatus.Aborted:
-                        break;
-
-                    case ResultStatus.Completed:
-                        var authToken = result.Data;
-
-                        _googleOAuth2Service.GetUserInfo(authToken, result2 =>
-                        {
-                            if (result2.Status == ResultStatus.Aborted)
-                            {
-                                return;
-                            }
-
-                            _systemTrayService.HideProgressIndicator();
-
-                            if (result2.Status != ResultStatus.Completed)
-                            {
-                                _messageBoxService.Show("Unable to retrieve the account email address!", "Error");
-
-                                return;
-                            }
-
-                            var email = result2.Data.EMail;
-
-                            var oldAccount = _mainModel.AvailableAccounts.FirstOrDefault(x => x.Name == email);
-
-                            if (oldAccount != null)
-                            {
-                                _mainModel.AvailableAccounts.Remove(oldAccount);
-                            }
-
-                            _mainModel.AvailableAccounts.Add(new AccountModel(email, authToken));
-                            _mainModel.Save();
-
-                            MessengerInstance.Send(new AvailableAccountsChangedMessage());
-
-                            _navigationService.GoBack();
-                        }, null);
-
-                        break;
-
-                    default:
-                        _systemTrayService.HideProgressIndicator();
-
-                        _messageBoxService.Show("Unable to retrieve the access tokens!", "Error");
-
-                        break;
+                    _mainModel.AvailableAccounts.Remove(oldAccount);
                 }
-            }, null);
+
+                _mainModel.AvailableAccounts.Add(new AccountModel(email, authToken));
+                _mainModel.Save();
+
+                MessengerInstance.Send(new AvailableAccountsChangedMessage());
+
+                _navigationService.GoBack();
+            }
+            catch (Exception ex)
+            {
+                _systemTrayService.HideProgressIndicator();
+
+                _messageBoxService.Show("Unable to retrieve the access tokens!", "Error");
+            }
         }
     }
 }
