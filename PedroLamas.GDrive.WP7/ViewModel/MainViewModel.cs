@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿#if !WP8
+using System;
+#endif
+using System.Collections.Generic;
 using System.Linq;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
@@ -14,6 +17,7 @@ namespace PedroLamas.GDrive.ViewModel
         private readonly INavigationService _navigationService;
         private readonly IMessageBoxService _messageBoxService;
         private readonly IApplicationSettingsService _applicationSettingsService;
+        private readonly IShellTileService _shellTileService;
 
         #region Properties
 
@@ -45,12 +49,13 @@ namespace PedroLamas.GDrive.ViewModel
 
         #endregion
 
-        public MainViewModel(IMainModel mainModel, INavigationService navigationService, IMessageBoxService messageBoxService, IApplicationSettingsService applicationSettingsService)
+        public MainViewModel(IMainModel mainModel, INavigationService navigationService, IMessageBoxService messageBoxService, IApplicationSettingsService applicationSettingsService, IShellTileService shellTileService)
         {
             _mainModel = mainModel;
             _navigationService = navigationService;
             _messageBoxService = messageBoxService;
             _applicationSettingsService = applicationSettingsService;
+            _shellTileService = shellTileService;
 
             NewAccountCommand = new RelayCommand(() =>
             {
@@ -101,6 +106,10 @@ namespace PedroLamas.GDrive.ViewModel
             {
                 RefreshAccountsList();
             });
+
+#if !WP8
+            DispatcherHelper.RunAsync(UpdateTiles);
+#endif
         }
 
         private void RefreshAccountsList()
@@ -111,5 +120,22 @@ namespace PedroLamas.GDrive.ViewModel
                 RaisePropertyChanged(() => EmptyAvailableAccounts);
             });
         }
+
+#if !WP8
+        private void UpdateTiles()
+        {
+            var primaryTile = _shellTileService.ActiveTiles.FirstOrDefault();
+
+            if (primaryTile != null)
+            {
+                primaryTile.Update(new ShellTileServiceFlipTileData()
+                {
+                    SmallBackgroundImage = new Uri("/GDrive_159x159.png", UriKind.Relative),
+                    BackgroundImage = new Uri("/GDrive_336x336.png", UriKind.Relative),
+                    WideBackgroundImage = new Uri("/GDrive_691x336.png", UriKind.Relative)
+                });
+            }
+        }
+#endif
     }
 }

@@ -1,9 +1,10 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Navigation;
+using Cimbalino.Phone.Toolkit.Helpers;
+using GalaSoft.MvvmLight.Threading;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using GalaSoft.MvvmLight.Threading;
-using Cimbalino.Phone.Toolkit.Helpers;
 
 namespace PedroLamas.GDrive
 {
@@ -13,17 +14,17 @@ namespace PedroLamas.GDrive
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
-        public PhoneApplicationFrame RootFrame { get; private set; }
+        public static PhoneApplicationFrame RootFrame { get; private set; }
 
         /// <summary>
         /// Constructor for the Application object.
         /// </summary>
         public App()
         {
-            // Global handler for uncaught exceptions. 
+            // Global handler for uncaught exceptions.
             UnhandledException += Application_UnhandledException;
 
-            // Standard Silverlight initialization
+            // Standard XAML initialization
             InitializeComponent();
 
             // Phone-specific initialization
@@ -37,23 +38,23 @@ namespace PedroLamas.GDrive
             LittleWatson.Initialize("pedrolamas@gmail.com", "GDrive Error");
 
             // Show graphics profiling information while debugging.
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 // Display the current frame rate counters.
-                //Application.Current.Host.Settings.EnableFrameRateCounter = true;
+                Application.Current.Host.Settings.EnableFrameRateCounter = true;
 
                 // Show the areas of the app that are being redrawn in each frame.
                 //Application.Current.Host.Settings.EnableRedrawRegions = true;
 
-                // Enable non-production analysis visualization mode, 
+                // Enable non-production analysis visualization mode,
                 // which shows areas of a page that are handed off to GPU with a colored overlay.
                 //Application.Current.Host.Settings.EnableCacheVisualization = true;
 
-                // Disable the application idle detection by setting the UserIdleDetectionMode property of the
-                // application's PhoneApplicationService object to Disabled.
+                // Prevent the screen from turning off while under the debugger by disabling
+                // the application's idle detection.
                 // Caution:- Use this under debug mode only. Application that disables user idle detection will continue to run
                 // and consume battery power when the user is not using the phone.
-                //PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
+                PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
         }
@@ -85,24 +86,20 @@ namespace PedroLamas.GDrive
         // Code to execute if a navigation fails
         private void RootFrame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            LittleWatson.ReportException(e.Exception, "");
-
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 // A navigation has failed; break into the debugger
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
             }
         }
 
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
-            LittleWatson.ReportException(e.ExceptionObject, "");
-
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 // An unhandled exception has occurred; break into the debugger
-                System.Diagnostics.Debugger.Break();
+                Debugger.Break();
             }
         }
 
@@ -125,6 +122,11 @@ namespace PedroLamas.GDrive
             // Handle navigation failures
             RootFrame.NavigationFailed += RootFrame_NavigationFailed;
 
+#if WP8
+            // Handle reset requests for clearing the backstack
+            RootFrame.Navigated += CheckForResetNavigation;
+#endif
+
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
         }
@@ -138,9 +140,33 @@ namespace PedroLamas.GDrive
 
             // Remove this handler since it is no longer needed
             RootFrame.Navigated -= CompleteInitializePhoneApplication;
-
-            LittleWatson.CheckForPreviousException();
         }
+
+#if WP8
+        private void CheckForResetNavigation(object sender, NavigationEventArgs e)
+        {
+            // If the app has received a 'reset' navigation, then we need to check
+            // on the next navigation to see if the page stack should be reset
+            if (e.NavigationMode == NavigationMode.Reset)
+                RootFrame.Navigated += ClearBackStackAfterReset;
+        }
+
+        private void ClearBackStackAfterReset(object sender, NavigationEventArgs e)
+        {
+            // Unregister the event so it doesn't get called again
+            RootFrame.Navigated -= ClearBackStackAfterReset;
+
+            // Only clear the stack for 'new' (forward) and 'refresh' navigations
+            if (e.NavigationMode != NavigationMode.New && e.NavigationMode != NavigationMode.Refresh)
+                return;
+
+            // For UI consistency, clear the entire page stack
+            while (RootFrame.RemoveBackEntry() != null)
+            {
+                ; // do nothing
+            }
+        }
+#endif
 
         #endregion
     }

@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
+  <AppExtra xmlns="" AppPlatformVersion="8.0">
+    <Extra Name="Tiles"/>
+  </AppExtra>
   <App xmlns="" ProductID="{f9b43464-6b18-44ad-974e-d0102b33df27}" Title="GDrive" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Pedro Lamas" Description="GDrive" Publisher="Pedro Lamas">
-    <IconPath IsRelative="true" IsResource="false">ApplicationIcon.png</IconPath>
+    <IconPath IsRelative="true" IsResource="false">GDrive_62x62.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
@@ -13,7 +16,7 @@
     <Tokens>
       <PrimaryToken TokenID="PedroLamas.GDriveToken" TaskName="_default">
         <TemplateType5>
-          <BackgroundImageURI IsRelative="true" IsResource="false">Background.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative="true" IsResource="false">GDrive_173x173.png</BackgroundImageURI>
           <Count>0</Count>
           <Title>GDrive</Title>
         </TemplateType5>

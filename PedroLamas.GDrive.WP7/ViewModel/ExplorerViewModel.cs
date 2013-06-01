@@ -17,7 +17,7 @@ namespace PedroLamas.GDrive.ViewModel
 {
     public class ExplorerViewModel : ViewModelBase
     {
-        private const string GoogleDriveFilesListFields = "etag,items(description,fileSize,id,labels,mimeType,modifiedDate,title),nextPageToken";
+        private const string GoogleDriveFilesListFields = "etag,items(description,fileSize,id,thumbnailLink,labels,mimeType,modifiedDate,title),nextPageToken";
         private const string GoogleDriveFileFields = "description,fileSize,id,labels,mimeType,modifiedDate,title";
 
         private readonly IMainModel _mainModel;

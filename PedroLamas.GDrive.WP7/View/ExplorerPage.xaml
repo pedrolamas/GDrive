@@ -7,8 +7,8 @@
                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
                             xmlns:localControls="clr-namespace:PedroLamas.GDrive.Controls"
+                            xmlns:localViewModel="clr-namespace:PedroLamas.GDrive.ViewModel"
                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                            xmlns:mvvmlightCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
                             xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
                             xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
                             xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
@@ -31,10 +31,10 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <mvvmlightCommand:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
+            <localViewModel:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
         </i:EventTrigger>
         <i:EventTrigger EventName="BackKeyPress">
-            <mvvmlightCommand:EventToCommand Command="{Binding BackKeyPressCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
+            <localViewModel:EventToCommand Command="{Binding BackKeyPressCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
     <i:Interaction.Behaviors>
@@ -73,12 +73,11 @@
     </i:Interaction.Behaviors>
 
     <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
-        <toolkit:LockablePivot Title="{Binding}"
-                               Foreground="{StaticResource ForegroundBrush}"
-                               IsLocked="{Binding IsSelectionEnabled}"
-                               SelectedIndex="{Binding PivotSelectedIndex,
-                                                       Mode=TwoWay}">
-            <toolkit:LockablePivot.TitleTemplate>
+        <controls:Pivot Title="{Binding}"
+                        Foreground="{StaticResource ForegroundBrush}"
+                        SelectedIndex="{Binding PivotSelectedIndex,
+                                                Mode=TwoWay}">
+            <controls:Pivot.TitleTemplate>
                 <DataTemplate>
                     <StackPanel>
                         <TextBlock>
@@ -90,7 +89,7 @@
                         </TextBlock>
                     </StackPanel>
                 </DataTemplate>
-            </toolkit:LockablePivot.TitleTemplate>
+            </controls:Pivot.TitleTemplate>
             <controls:PivotItem Header="files">
                 <toolkit:MultiselectList x:Name="FilesList"
                                          Margin="-24,0,0,0"
@@ -147,13 +146,13 @@
             </controls:PivotItem>
 
             <controls:PivotItem Header="pictures">
-                <ItemsControl ItemsSource="{Binding PictureFiles}">
-                    <ItemsControl.ItemsPanel>
+                <ListBox ItemsSource="{Binding PictureFiles}">
+                    <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <toolkit:WrapPanel />
                         </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
                         <DataTemplate>
                             <Border Width="173"
                                     Height="173"
@@ -163,9 +162,9 @@
                                 <localControls:SmoothImage ImageSource="{Binding ThumbnailLink}" />
                             </Border>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </controls:PivotItem>
-        </toolkit:LockablePivot>
+        </controls:Pivot>
     </Grid>
 </phone:PhoneApplicationPage>

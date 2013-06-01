@@ -3,8 +3,8 @@
                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:localViewModel="clr-namespace:PedroLamas.GDrive.ViewModel"
                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                            xmlns:mvvmCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
                             xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
                             xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
                             DataContext="{Binding Authorization,
@@ -22,7 +22,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <mvvmCommand:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
+            <localViewModel:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
@@ -50,13 +50,13 @@
                                                    Converter={StaticResource BooleanToVisibilityConverter}}">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Navigating">
-                        <mvvmCommand:EventToCommand Command="{Binding WebBrowserNavigatingCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
+                        <localViewModel:EventToCommand Command="{Binding WebBrowserNavigatingCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                     <i:EventTrigger EventName="Navigated">
-                        <mvvmCommand:EventToCommand Command="{Binding WebBrowserNavigatedCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
+                        <localViewModel:EventToCommand Command="{Binding WebBrowserNavigatedCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                     <i:EventTrigger EventName="NavigationFailed">
-                        <mvvmCommand:EventToCommand Command="{Binding WebBrowserNavigationFailedCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
+                        <localViewModel:EventToCommand Command="{Binding WebBrowserNavigationFailedCommand, Mode=OneTime}" PassEventArgsToCommand="True" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </phone:WebBrowser>

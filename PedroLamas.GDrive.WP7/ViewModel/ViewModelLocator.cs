@@ -28,6 +28,7 @@ namespace PedroLamas.GDrive.ViewModel
             Register<IMarketplaceReviewService, MarketplaceReviewService>();
             Register<IMarketplaceSearchService, MarketplaceSearchService>();
             Register<IShareLinkService, ShareLinkService>();
+            Register<IShellTileService, ShellTileService>();
 
             Register<IMainModel, MainModel>();
             Register<IGoogleClientSettings>(() => new GoogleClientSettings()

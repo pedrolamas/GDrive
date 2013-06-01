@@ -3,19 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:cimbalinoConverters="clr-namespace:Cimbalino.Phone.Toolkit.Converters;assembly=Cimbalino.Phone.Toolkit"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:localViewModel="clr-namespace:PedroLamas.GDrive.ViewModel"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
              xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
              xmlns:toolkitPrimitives="clr-namespace:Microsoft.Phone.Controls.Primitives;assembly=Microsoft.Phone.Controls.Toolkit"
-             xmlns:vm="clr-namespace:PedroLamas.GDrive.ViewModel"
              mc:Ignorable="d">
 
     <Application.Resources>
         <sys:String x:Key="ApplicationTitle">GDRIVE</sys:String>
 
-        <vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+        <localViewModel:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
 
         <cimbalinoConverters:NegativeBooleanConverter x:Key="NegativeBooleanConverter" />
         <cimbalinoConverters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -495,17 +495,12 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-
-
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>
-        <!--  Required object that handles lifetime events for the application  -->
         <shell:PhoneApplicationService Activated="Application_Activated"
                                        Closing="Application_Closing"
                                        Deactivated="Application_Deactivated"
                                        Launching="Application_Launching" />
     </Application.ApplicationLifetimeObjects>
-
 </Application>

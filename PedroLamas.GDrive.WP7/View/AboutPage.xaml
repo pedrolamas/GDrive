@@ -5,8 +5,8 @@
                             xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
                             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:localViewModel="clr-namespace:PedroLamas.GDrive.ViewModel"
                             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                            xmlns:mvvmlightCommand="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP71"
                             xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
                             xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
                             DataContext="{Binding About,
@@ -61,7 +61,7 @@
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
-            <mvvmlightCommand:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
+            <localViewModel:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 

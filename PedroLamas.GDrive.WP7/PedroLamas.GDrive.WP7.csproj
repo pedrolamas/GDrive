@@ -20,7 +20,7 @@
     </SupportedCultures>
     <XapOutputs>true</XapOutputs>
     <GenerateSilverlightManifest>true</GenerateSilverlightManifest>
-    <XapFilename>PedroLamas.WP7.GDrive.xap</XapFilename>
+    <XapFilename>PedroLamas.GDrive.WP7.xap</XapFilename>
     <SilverlightManifestTemplate>Properties\AppManifest.xml</SilverlightManifestTemplate>
     <SilverlightAppEntry>PedroLamas.GDrive.App</SilverlightAppEntry>
     <ValidateXaml>true</ValidateXaml>
@@ -50,13 +50,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cimbalino.Phone.Toolkit, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cimbalino.Phone.Toolkit, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cimbalino.Phone.Toolkit.2.3.1\lib\sl4-wp71\Cimbalino.Phone.Toolkit.dll</HintPath>
+      <HintPath>..\packages\Cimbalino.Phone.Toolkit.3.0.0-rc2\lib\sl4-wp71\Cimbalino.Phone.Toolkit.dll</HintPath>
     </Reference>
-    <Reference Include="Cimbalino.Phone.Toolkit.Camera, Version=2.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Cimbalino.Phone.Toolkit.Background">
+      <HintPath>..\packages\Cimbalino.Phone.Toolkit.Background.3.0.0-rc2\lib\sl4-wp71\Cimbalino.Phone.Toolkit.Background.dll</HintPath>
+    </Reference>
+    <Reference Include="Cimbalino.Phone.Toolkit.Camera, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Cimbalino.Phone.Toolkit.Camera.2.3.1\lib\sl4-wp71\Cimbalino.Phone.Toolkit.Camera.dll</HintPath>
+      <HintPath>..\packages\Cimbalino.Phone.Toolkit.Camera.3.0.0-rc2\lib\sl4-wp71\Cimbalino.Phone.Toolkit.Camera.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Extras.WP71, Version=4.1.27.22669, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -72,8 +75,9 @@
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Controls, Version=7.0.0.0, Culture=neutral, PublicKeyToken=24eec0d8c86cda1e, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.Phone.Controls.Toolkit">
-      <HintPath>..\packages\SilverlightToolkitWP.4.2012.6.25\lib\sl4-windowsphone71\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
+    <Reference Include="Microsoft.Phone.Controls.Toolkit, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b772ad94eb9ca604, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WPtoolkit.4.2012.10.30\lib\sl4-windowsphone71\Microsoft.Phone.Controls.Toolkit.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Phone.Interop" />
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -152,6 +156,7 @@
     <Compile Include="ViewModel\AboutViewModel.cs" />
     <Compile Include="ViewModel\AccountViewModel.cs" />
     <Compile Include="ViewModel\AvailableAccountsChangedMessage.cs" />
+    <Compile Include="ViewModel\EventToCommand.cs" />
     <Compile Include="ViewModel\FileSizeValueConverter.cs" />
     <Compile Include="ViewModel\GoogleFileViewModel.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -184,8 +189,8 @@
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
-      <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -220,17 +225,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApplicationIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="GDrive_159x159.png" />
+    <Content Include="GDrive_173x173.png" />
+    <Content Include="GDrive_336x336.png" />
+    <Content Include="GDrive_62x62.png" />
+    <Content Include="GDrive_691x336.png" />
     <Content Include="Images\appbar.add.rest.png" />
     <Content Include="Images\appbar.check.rest.png" />
     <Content Include="Images\appbar.delete.rest.png" />
-    <Content Include="Images\appbar.manage.rest.png" />
-    <Content Include="Images\appbar.sync.rest.png" />
     <Content Include="Images\ic_type_doc.png" />
     <Content Include="Images\ic_type_drawing.png" />
     <Content Include="Images\ic_type_excel.png" />
@@ -247,6 +249,8 @@
     <Content Include="Images\ic_type_site.png" />
     <Content Include="Images\ic_type_video.png" />
     <Content Include="Images\ic_type_word.png" />
+    <Content Include="Images\appbar.manage.rest.png" />
+    <Content Include="Images\appbar.sync.rest.png" />
     <Content Include="SplashScreenImage.jpg" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
