@@ -105,6 +105,20 @@
                                                                Mode=OneTime}"
                                              CommandParameter="{Binding}"
                                              Style="{StaticResource EmptyButtonStyle}">
+                                <toolkit:ContextMenuService.ContextMenu>
+                                    <toolkit:ContextMenu>
+                                        <toolkit:MenuItem Command="{Binding Explorer.RenameFileCommand,
+                                                                            Mode=OneTime,
+                                                                            Source={StaticResource Locator}}"
+                                                          CommandParameter="{Binding}"
+                                                          Header="rename" />
+                                        <toolkit:MenuItem Command="{Binding Explorer.DeleteFileCommand,
+                                                                            Mode=OneTime,
+                                                                            Source={StaticResource Locator}}"
+                                                          CommandParameter="{Binding}"
+                                                          Header="delete" />
+                                    </toolkit:ContextMenu>
+                                </toolkit:ContextMenuService.ContextMenu>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

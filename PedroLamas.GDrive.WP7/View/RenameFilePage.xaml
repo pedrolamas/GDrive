@@ -1,0 +1,67 @@
+﻿<phone:PhoneApplicationPage x:Class="PedroLamas.GDrive.View.RenameFilePage"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:cimbalinoBehaviors="clr-namespace:Cimbalino.Phone.Toolkit.Behaviors;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:localViewModel="clr-namespace:PedroLamas.GDrive.ViewModel"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+                            xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+                            DataContext="{Binding RenameFile,
+                                                  Source={StaticResource Locator}}"
+                            FontFamily="{StaticResource PhoneFontFamilyNormal}"
+                            FontSize="{StaticResource PhoneFontSizeNormal}"
+                            Foreground="{StaticResource PhoneForegroundBrush}"
+                            Orientation="Portrait"
+                            Style="{StaticResource PhoneApplicationPageStyle}"
+                            SupportedOrientations="Portrait"
+                            d:DesignHeight="768"
+                            d:DesignWidth="480"
+                            shell:SystemTray.IsVisible="True"
+                            mc:Ignorable="d">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <localViewModel:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <i:Interaction.Behaviors>
+        <cimbalinoBehaviors:ApplicationBarBehavior BackgroundColor="{StaticResource Box2BackgroundColor}" ForegroundColor="{StaticResource Box2ForegroundColor}">
+            <cimbalinoBehaviors:ApplicationBarIconButton Command="{Binding RenameFileCommand,
+                                                                           Mode=OneTime}"
+                                                         IconUri="/Images/appbar.check.rest.png"
+                                                         Text="ok" />
+        </cimbalinoBehaviors:ApplicationBarBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel x:Name="TitlePanel"
+                    Grid.Row="0"
+                    Margin="12,17,0,28">
+            <TextBlock x:Name="ApplicationTitle" Style="{StaticResource TextNormalStyle}">
+                <Run Text="{StaticResource ApplicationTitle}" />
+                <Run Text=" :: " />
+                <Run Text="{Binding AccountName}" />
+                <LineBreak />
+                <Run Text="{Binding CurrentPath}" />
+            </TextBlock>
+            <TextBlock x:Name="PageTitle"
+                       Margin="9,-7,0,0"
+                       Style="{StaticResource TextTitle1Style}"
+                       Text="rename file" />
+        </StackPanel>
+
+        <StackPanel x:Name="ContentPanel"
+                    Grid.Row="1"
+                    Margin="12,0,12,0">
+            <TextBlock Style="{StaticResource TextSubtleStyle}" Text="file name" />
+            <TextBox Text="{Binding FileName, Mode=TwoWay}" />
+        </StackPanel>
+    </Grid>
+</phone:PhoneApplicationPage>

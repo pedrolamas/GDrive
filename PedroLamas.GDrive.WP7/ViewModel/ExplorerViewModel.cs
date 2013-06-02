@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Cimbalino.Phone.Toolkit.Extensions;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
@@ -112,6 +113,8 @@ namespace PedroLamas.GDrive.ViewModel
 
         public RelayCommand<GoogleFileViewModel> RenameFileCommand { get; private set; }
 
+        public RelayCommand<GoogleFileViewModel> DeleteFileCommand { get; private set; }
+
         public RelayCommand ShowAboutCommand { get; private set; }
 
         public RelayCommand PageLoadedCommand { get; private set; }
@@ -176,7 +179,7 @@ namespace PedroLamas.GDrive.ViewModel
 
             DeleteFilesCommand = new RelayCommand<IList>(files =>
             {
-                _messageBoxService.Show("You are about to delete the selected files. Do you wish to proceed?", "Delete files?", new string[] { "delete", "cancel" }, button =>
+                _messageBoxService.Show("You are about to delete the selected files. Do you wish to proceed?", "Delete files?", new[] { "delete", "cancel" }, button =>
                 {
                     if (button != 0)
                         return;
@@ -193,6 +196,19 @@ namespace PedroLamas.GDrive.ViewModel
             });
 
             CreateNewFolderCommand = new RelayCommand(CreateNewFolder);
+
+            RenameFileCommand = new RelayCommand<GoogleFileViewModel>(RenameFile);
+
+            DeleteFileCommand = new RelayCommand<GoogleFileViewModel>(file =>
+            {
+                _messageBoxService.Show(string.Format("You are about to delete '{0}'. Do you wish to proceed?", file.Title), "Delete file?", new[] { "delete", "cancel" }, button =>
+                {
+                    if (button != 0)
+                        return;
+
+                    DeleteFile(file);
+                });
+            });
 
             ShowAboutCommand = new RelayCommand(() =>
             {
@@ -461,49 +477,75 @@ namespace PedroLamas.GDrive.ViewModel
             _navigationService.NavigateTo("/View/NewFolderPage.xaml");
         }
 
+        private void RenameFile(GoogleFileViewModel fileViewModel)
+        {
+            _mainModel.SelectedFile = fileViewModel.FileModel;
+
+            _navigationService.NavigateTo("/View/RenameFilePage.xaml");
+        }
+
+        private async void DeleteFile(GoogleFileViewModel fileViewModel)
+        {
+            AbortCurrentCall();
+
+            try
+            {
+                await DeleteFileAux(fileViewModel);
+
+                _systemTrayService.HideProgressIndicator();
+            }
+            catch
+            {
+            }
+        }
+
         private async void DeleteFiles(IEnumerable<GoogleFileViewModel> filesToDelete)
         {
             AbortCurrentCall();
 
             try
             {
-                await _mainModel.CheckToken(_cancellationTokenSource.Token);
-
                 foreach (var fileViewModel in filesToDelete)
                 {
-                    _systemTrayService.SetProgressIndicator(string.Format("Deleting: {0}...", fileViewModel.Title));
-
-                    await _googleDriveService.FilesDelete(_mainModel.CurrentAccount.AuthToken, fileViewModel.Id, _cancellationTokenSource.Token);
-
-                    lock (Files)
-                    {
-                        if (Files.Contains(fileViewModel))
-                        {
-                            Files.Remove(fileViewModel);
-                        }
-                    }
-
+                    await DeleteFileAux(fileViewModel);
                 }
 
                 _systemTrayService.HideProgressIndicator();
             }
-            catch (OperationCanceledException)
+            catch
             {
-                _systemTrayService.HideProgressIndicator();
-            }
-            catch (Exception ex)
-            {
-                _systemTrayService.HideProgressIndicator();
-
-                _messageBoxService.Show("Unable to delete a file!", "Error");
             }
         }
 
-        private void AbortCurrentCall()
+        private async Task DeleteFileAux(GoogleFileViewModel fileViewModel)
         {
-            AbortCurrentCall(false);
+            try
+            {
+                await _mainModel.CheckToken(_cancellationTokenSource.Token);
+
+                _systemTrayService.SetProgressIndicator(string.Format("Deleting: {0}...", fileViewModel.Title));
+
+                await _googleDriveService.FilesDelete(_mainModel.CurrentAccount.AuthToken, fileViewModel.Id, _cancellationTokenSource.Token);
+
+                lock (Files)
+                {
+                    if (Files.Contains(fileViewModel))
+                    {
+                        Files.Remove(fileViewModel);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                _systemTrayService.HideProgressIndicator();
+
+                _messageBoxService.Show(string.Format("Unable to delete '{0}'!", fileViewModel.Title), "Error");
+
+                throw;
+            }
         }
-        private void AbortCurrentCall(bool hideSystemTray)
+
+        private void AbortCurrentCall(bool hideSystemTray = false)
         {
             if (_cancellationTokenSource == null)
             {

@@ -8,7 +8,7 @@ using PedroLamas.GDrive.Service;
 
 namespace PedroLamas.GDrive.ViewModel
 {
-    public class NewFolderViewModel : ViewModelBase
+    public class RenameFileViewModel : ViewModelBase
     {
         private const string GoogleDriveFileFields = "description,etag,fileSize,id,labels,mimeType,modifiedDate,title";
 
@@ -17,8 +17,7 @@ namespace PedroLamas.GDrive.ViewModel
         private readonly IGoogleDriveService _googleDriveService;
         private readonly ISystemTrayService _systemTrayService;
         private readonly IMessageBoxService _messageBoxService;
-
-        private string _folderName;
+        private string _fileName;
 
         #region Properties
 
@@ -38,24 +37,26 @@ namespace PedroLamas.GDrive.ViewModel
             }
         }
 
-        public RelayCommand CreateNewFolderCommand { get; set; }
-
-        public string FolderName
+        public string FileName
         {
             get
             {
-                return _folderName;
+                return _fileName;
             }
             set
             {
-                if (_folderName == value)
+                if (_fileName == value)
                     return;
 
-                _folderName = value;
+                _fileName = value;
 
-                RaisePropertyChanged(() => FolderName);
+                RaisePropertyChanged(() => FileName);
             }
         }
+
+        public RelayCommand RenameFileCommand { get; private set; }
+
+        public RelayCommand PageLoadedCommand { get; private set; }
 
         public bool IsBusy
         {
@@ -67,7 +68,7 @@ namespace PedroLamas.GDrive.ViewModel
 
         #endregion
 
-        public NewFolderViewModel(IMainModel mainModel, INavigationService navigationService, IGoogleDriveService googleDriveService, ISystemTrayService systemTrayService, IMessageBoxService messageBoxService)
+        public RenameFileViewModel(IMainModel mainModel, INavigationService navigationService, IGoogleDriveService googleDriveService, ISystemTrayService systemTrayService, IMessageBoxService messageBoxService)
         {
             _mainModel = mainModel;
             _navigationService = navigationService;
@@ -75,25 +76,32 @@ namespace PedroLamas.GDrive.ViewModel
             _systemTrayService = systemTrayService;
             _messageBoxService = messageBoxService;
 
-            CreateNewFolderCommand = new RelayCommand(CreateNewFolder, () => !IsBusy);
+            RenameFileCommand = new RelayCommand(RenameFile, () => !IsBusy);
+
+            PageLoadedCommand = new RelayCommand(() =>
+            {
+                FileName = _mainModel.SelectedFile.Title;
+            });
         }
 
-        private async void CreateNewFolder()
+        private async void RenameFile()
         {
             try
             {
                 await _mainModel.CheckToken(CancellationToken.None);
-            
-                _systemTrayService.SetProgressIndicator("Creating new folder...");
 
-                var file = await _googleDriveService.FilesInsert(_mainModel.CurrentAccount.AuthToken, new GoogleDriveFilesInsertRequest()
+                _systemTrayService.SetProgressIndicator("Renaming the file...");
+
+                var file = await _googleDriveService.FilesUpdate(_mainModel.CurrentAccount.AuthToken, _mainModel.SelectedFile.Id, new GoogleDriveFilesUpdateRequest()
                 {
-                    Filename = FolderName,
-                    FolderId = _mainModel.CurrentFolderId,
+                    File = new GoogleDriveFile()
+                    {
+                        Title = FileName
+                    },
                     Fields = GoogleDriveFileFields
                 }, CancellationToken.None);
 
-                FolderName = string.Empty;
+                _mainModel.SelectedFile = null;
 
                 MessengerInstance.Send(new RefreshFilesMessage());
 
@@ -107,7 +115,7 @@ namespace PedroLamas.GDrive.ViewModel
             {
                 _systemTrayService.HideProgressIndicator();
 
-                _messageBoxService.Show("Unable to create the new folder!", "Error");
+                _messageBoxService.Show("Unable to rename the file!", "Error");
             }
         }
     }

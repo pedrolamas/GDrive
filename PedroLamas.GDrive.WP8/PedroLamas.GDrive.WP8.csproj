@@ -222,6 +222,9 @@
     <Compile Include="..\PedroLamas.GDrive.WP7\ViewModel\RefreshFilesMessage.cs">
       <Link>ViewModel\RefreshFilesMessage.cs</Link>
     </Compile>
+    <Compile Include="..\PedroLamas.GDrive.WP7\ViewModel\RenameFileViewModel.cs">
+      <Link>ViewModel\RenameFileViewModel.cs</Link>
+    </Compile>
     <Compile Include="..\PedroLamas.GDrive.WP7\ViewModel\ViewModelLocator.cs">
       <Link>ViewModel\ViewModelLocator.cs</Link>
     </Compile>
@@ -244,6 +247,10 @@
     <Compile Include="..\PedroLamas.GDrive.WP7\View\NewFolderPage.xaml.cs">
       <Link>View\NewFolderPage.xaml.cs</Link>
       <DependentUpon>NewFolderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="..\PedroLamas.GDrive.WP7\View\RenameFilePage.xaml.cs">
+      <Link>View\RenameFilePage.xaml.cs</Link>
+      <DependentUpon>RenameFilePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -322,6 +329,9 @@
     <Content Include="GDrive_336x336.png" />
     <Content Include="GDrive_691x336.png" />
     <Content Include="GDrive_99x99.png" />
+    <Content Include="SplashScreenImage.screen-720p.jpg" />
+    <Content Include="SplashScreenImage.screen-WVGA.jpg" />
+    <Content Include="SplashScreenImage.screen-WXGA.jpg" />
     <Content Include="Toolkit.Content\ApplicationBar.Cancel.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Check.png" />
     <Content Include="Toolkit.Content\ApplicationBar.Delete.png" />
@@ -360,6 +370,11 @@
     </Page>
     <Page Include="..\PedroLamas.GDrive.WP7\View\NewFolderPage.xaml">
       <Link>View\NewFolderPage.xaml</Link>
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="..\PedroLamas.GDrive.WP7\View\RenameFilePage.xaml">
+      <Link>View\RenameFilePage.xaml</Link>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

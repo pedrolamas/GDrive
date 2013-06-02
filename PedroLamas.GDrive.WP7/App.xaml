@@ -180,6 +180,10 @@
             </Setter>
         </Style>
 
+        <Style TargetType="toolkit:MenuItem">
+            <Setter Property="Foreground" Value="{StaticResource PhoneForegroundBrush}" />
+        </Style>
+
         <Style x:Key="StarCheckBoxStyle" TargetType="CheckBox">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Template">

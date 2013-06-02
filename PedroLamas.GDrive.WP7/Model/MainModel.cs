@@ -38,6 +38,8 @@ namespace PedroLamas.GDrive.Model
             }
         }
 
+        public GoogleDriveFile SelectedFile { get; set; }
+
         public string CurrentFolderId
         {
             get
@@ -76,6 +78,8 @@ namespace PedroLamas.GDrive.Model
                 _systemTrayService.SetProgressIndicator("Refreshing the access token...");
 
                 CurrentAccount.AuthToken = await _googleAuthService.RefreshToken(authToken, cancellationToken);
+
+                Save();
             }
         }
 

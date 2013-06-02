@@ -75,7 +75,6 @@
                                                                         Source={StaticResource Locator},
                                                                         Mode=OneTime}"
                                                       CommandParameter="{Binding}"
-                                                      Foreground="{StaticResource PhoneForegroundBrush}"
                                                       Header="remove" />
                                 </toolkit:ContextMenu>
                             </toolkit:ContextMenuService.ContextMenu>

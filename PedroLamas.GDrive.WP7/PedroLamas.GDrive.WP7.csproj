@@ -170,6 +170,7 @@
     <Compile Include="ViewModel\ExplorerViewModel.cs" />
     <Compile Include="ViewModel\NewFolderViewModel.cs" />
     <Compile Include="ViewModel\RefreshFilesMessage.cs" />
+    <Compile Include="ViewModel\RenameFileViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Compile Include="View\AboutPage.xaml.cs">
       <DependentUpon>AboutPage.xaml</DependentUpon>
@@ -185,6 +186,9 @@
     </Compile>
     <Compile Include="View\NewFolderPage.xaml.cs">
       <DependentUpon>NewFolderPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\RenameFilePage.xaml.cs">
+      <DependentUpon>RenameFilePage.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -213,6 +217,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\NewFolderPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RenameFilePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

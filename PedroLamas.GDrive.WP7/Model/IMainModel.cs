@@ -15,6 +15,8 @@ namespace PedroLamas.GDrive.Model
 
         GoogleDriveFile CurrentFolder { get; }
 
+        GoogleDriveFile SelectedFile { get; set; }
+
         string CurrentFolderId { get; }
 
         string CurrentPath { get; }

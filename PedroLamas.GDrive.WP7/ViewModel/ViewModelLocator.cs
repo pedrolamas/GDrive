@@ -48,6 +48,7 @@ namespace PedroLamas.GDrive.ViewModel
             Register<MainViewModel>();
             Register<ExplorerViewModel>();
             Register<NewFolderViewModel>();
+            Register<RenameFileViewModel>();
             Register<AuthorizationViewModel>();
             Register<AboutViewModel>();
         }
@@ -73,6 +74,14 @@ namespace PedroLamas.GDrive.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<NewFolderViewModel>();
+            }
+        }
+
+        public RenameFileViewModel RenameFile
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<RenameFileViewModel>();
             }
         }
 

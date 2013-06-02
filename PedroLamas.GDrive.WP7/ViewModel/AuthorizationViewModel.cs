@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Windows.Navigation;
+using Cimbalino.Phone.Toolkit.Extensions;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -99,18 +100,9 @@ namespace PedroLamas.GDrive.ViewModel
 
                 WebBrowserSourceUri = new Uri("https://accounts.google.com/Logout");
 
-                try
-                {
-                    var queryValues = e.Uri.Query.TrimStart('?').Split('&')
-                        .Select(x => x.Split('='))
-                        .ToDictionary(x => x[0], x => x.Length > 0 ? Uri.UnescapeDataString(x[1]) : null);
+                var queryString = e.Uri.QueryString();
 
-                    ExchangeAuthorizationCode(queryValues["code"]);
-                }
-                catch
-                {
-                    _messageBoxService.Show("Unable to exchange the authentication code!", "Error");
-                }
+                ExchangeAuthorizationCode(queryString.GetValue("code"));
             });
 
             WebBrowserNavigatedCommand = new RelayCommand<NavigationEventArgs>(e =>
@@ -153,7 +145,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                 _navigationService.GoBack();
             }
-            catch (Exception ex)
+            catch
             {
                 _systemTrayService.HideProgressIndicator();
 
