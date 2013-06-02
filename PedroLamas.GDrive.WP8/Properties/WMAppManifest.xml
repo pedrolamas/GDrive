@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2012/deployment" AppPlatformVersion="8.0">
   <DefaultLanguage xmlns="" code="en-US" />
-  <App xmlns="" ProductID="{c7624c99-c864-44b3-9baf-89235a85ce90}" Title="GDrive" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Pedro Lamas" Description="GDrive" Publisher="Pedro Lamas" PublisherID="{2966ee0e-b7a2-418b-8fb8-0e3a78f65fda}">
+  <App xmlns="" ProductID="{c7624c99-c864-44b3-9baf-89235a85ce90}" Title="GDrive" RuntimeType="Silverlight" Version="1.1.0.8" Genre="apps.normal" Author="Pedro Lamas" Description="GDrive" Publisher="Pedro Lamas" PublisherID="{2966ee0e-b7a2-418b-8fb8-0e3a78f65fda}">
     <IconPath IsRelative="true" IsResource="false">GDrive_99x99.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />

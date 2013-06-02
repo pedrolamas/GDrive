@@ -3,7 +3,7 @@
   <AppExtra xmlns="" AppPlatformVersion="8.0">
     <Extra Name="Tiles"/>
   </AppExtra>
-  <App xmlns="" ProductID="{f9b43464-6b18-44ad-974e-d0102b33df27}" Title="GDrive" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="Pedro Lamas" Description="GDrive" Publisher="Pedro Lamas">
+  <App xmlns="" ProductID="{f9b43464-6b18-44ad-974e-d0102b33df27}" Title="GDrive" RuntimeType="Silverlight" Version="1.1.0.0" Genre="apps.normal" Author="Pedro Lamas" Description="GDrive" Publisher="Pedro Lamas">
     <IconPath IsRelative="true" IsResource="false">GDrive_62x62.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
