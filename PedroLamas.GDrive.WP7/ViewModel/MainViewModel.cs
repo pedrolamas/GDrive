@@ -124,6 +124,11 @@ namespace PedroLamas.GDrive.ViewModel
 #if !WP8
         private void UpdateTiles()
         {
+            if (!_shellTileService.LiveTilesSupported)
+            {
+                return;
+            }
+
             var primaryTile = _shellTileService.ActiveTiles.FirstOrDefault();
 
             if (primaryTile != null)
