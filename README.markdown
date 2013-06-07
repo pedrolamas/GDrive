@@ -13,32 +13,36 @@ Please feel free to fork, download, copy, change, alter, comment, trash...
 The application is using Google Drive API version 2.
 
 Currently, this is what you can do:
- - Multiple accounts support
- - OAuth 2 account login
- - List files and folders with their metadata
- - Navigate the folder tree
- - Create new folders
- - Upload files (just pictures, that's what Windows Phone SDK allows us to do!)
- - Star/Unstar files
- - Trash files
- - ...
+
+* Multiple accounts support
+* OAuth 2 account login
+* List files and folders with their metadata
+* Navigate the folder tree
+* Create new folders
+* Upload files (just pictures, that's what Windows Phone SDK allows us to do!)
+* Star/Unstar files
+* Rename files
+* Trash files
+* ...
 
 On my backlog, this is what you can find:
- - Copy/Move files
- - Improve caching
- - Implement some sort of service call stack
- - Use Google API RPC calls (in order to group requests, quite useful to get the files metadata)
- - Fix leaks!
- - Grab some [cimbalino][4] expresso coffee...
+
+* Copy/Move files
+* Improve caching
+* Implement some sort of service call stack
+* Use Google API RPC calls (in order to group requests)
+* Fix memory leaks and other issues!
+* Grab some [cimbalino][4] expresso coffee...
 
 ## Setup
 
 The project requires the following external components to work:
- - [MVVMLight Toolkit][6]
- - [Cimbalino Windows Phone Toolkit][7]
- - [Silverlight for Windows Phone Toolkit][8]
- - [RestSharp][9]
- - [Json.net][10]
+
+* [MVVMLight Toolkit][6]
+* [Cimbalino Windows Phone Toolkit][7]
+* [Windows Phone Toolkit][8]
+* [HttpClient][9]
+* [Json.net][10]
 
 To make things easier, the project is configured with [NuGet][5] ability to restore missing packages (available since version 1.6). You can read [here][11] about this feature and how you can activate it in your Visual Studio.
 
@@ -68,8 +72,8 @@ See the [LICENSE.txt][3] file for details.
 [5]: http://nuget.org/
 [6]: http://mvvmlight.codeplex.com/
 [7]: http://cimbalino.org
-[8]: http://silverlight.codeplex.com/
-[9]: http://restsharp.org/
+[8]: http://phone.codeplex.com/
+[9]: http://blogs.msdn.com/b/bclteam/p/httpclient.aspx
 [10]: http://james.newtonking.com/projects/json-net.aspx
 [11]: http://docs.nuget.org/docs/workflows/using-nuget-without-committing-packages
 [12]: http://code.google.com/apis/console
