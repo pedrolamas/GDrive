@@ -286,9 +286,9 @@ namespace PedroLamas.GDrive.ViewModel
                     _mainModel.Save();
                 }
 
-                RefreshFiles();
+                await RefreshFilesAsync();
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
                 _systemTrayService.HideProgressIndicator();
             }
@@ -345,7 +345,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                 _systemTrayService.HideProgressIndicator();
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
                 _systemTrayService.HideProgressIndicator();
             }
@@ -393,7 +393,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                         _systemTrayService.HideProgressIndicator();
                     }
-                    catch (OperationCanceledException)
+                    catch (TaskCanceledException)
                     {
                         _systemTrayService.HideProgressIndicator();
                     }
@@ -409,21 +409,64 @@ namespace PedroLamas.GDrive.ViewModel
 
         private async void RefreshFiles()
         {
-            var currentFolderId = _mainModel.CurrentFolderId;
+            await RefreshFilesAsync();
+        }
 
-            await _mainModel.CheckToken(_cancellationTokenSource.Token);
-
+        private void CreateNewFolder()
+        {
             AbortCurrentCall();
 
-            _systemTrayService.SetProgressIndicator("Refreshing the file list...");
+            _navigationService.NavigateTo("/View/NewFolderPage.xaml");
+        }
 
-            Files.Clear();
-            PictureFiles.Clear();
+        private void RenameFile(GoogleFileViewModel fileViewModel)
+        {
+            _mainModel.SelectedFile = fileViewModel.FileModel;
 
-            string pageToken = null;
+            _navigationService.NavigateTo("/View/RenameFilePage.xaml");
+        }
+
+        private async void DeleteFile(GoogleFileViewModel fileViewModel)
+        {
+            AbortCurrentCall();
+
+            await DeleteFileAsync(fileViewModel);
+
+            _systemTrayService.HideProgressIndicator();
+        }
+
+        private async void DeleteFiles(IEnumerable<GoogleFileViewModel> filesToDelete)
+        {
+            AbortCurrentCall();
+
+            foreach (var fileViewModel in filesToDelete)
+            {
+                if (!await DeleteFileAsync(fileViewModel))
+                {
+                    break;
+                }
+            }
+
+            _systemTrayService.HideProgressIndicator();
+        }
+
+        private async Task RefreshFilesAsync()
+        {
+            AbortCurrentCall();
 
             try
             {
+                var currentFolderId = _mainModel.CurrentFolderId;
+
+                await _mainModel.CheckToken(_cancellationTokenSource.Token);
+
+                _systemTrayService.SetProgressIndicator("Refreshing the file list...");
+
+                Files.Clear();
+                PictureFiles.Clear();
+
+                string pageToken = null;
+
                 while (true)
                 {
                     var filesListResponse = await _googleDriveService.FilesList(_mainModel.CurrentAccount.AuthToken, new GoogleDriveFilesListRequest()
@@ -458,7 +501,7 @@ namespace PedroLamas.GDrive.ViewModel
                     }
                 }
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
                 _systemTrayService.HideProgressIndicator();
             }
@@ -470,54 +513,7 @@ namespace PedroLamas.GDrive.ViewModel
             }
         }
 
-        private void CreateNewFolder()
-        {
-            AbortCurrentCall();
-
-            _navigationService.NavigateTo("/View/NewFolderPage.xaml");
-        }
-
-        private void RenameFile(GoogleFileViewModel fileViewModel)
-        {
-            _mainModel.SelectedFile = fileViewModel.FileModel;
-
-            _navigationService.NavigateTo("/View/RenameFilePage.xaml");
-        }
-
-        private async void DeleteFile(GoogleFileViewModel fileViewModel)
-        {
-            AbortCurrentCall();
-
-            try
-            {
-                await DeleteFileAux(fileViewModel);
-
-                _systemTrayService.HideProgressIndicator();
-            }
-            catch
-            {
-            }
-        }
-
-        private async void DeleteFiles(IEnumerable<GoogleFileViewModel> filesToDelete)
-        {
-            AbortCurrentCall();
-
-            try
-            {
-                foreach (var fileViewModel in filesToDelete)
-                {
-                    await DeleteFileAux(fileViewModel);
-                }
-
-                _systemTrayService.HideProgressIndicator();
-            }
-            catch
-            {
-            }
-        }
-
-        private async Task DeleteFileAux(GoogleFileViewModel fileViewModel)
+        private async Task<bool> DeleteFileAsync(GoogleFileViewModel fileViewModel)
         {
             try
             {
@@ -534,33 +530,32 @@ namespace PedroLamas.GDrive.ViewModel
                         Files.Remove(fileViewModel);
                     }
                 }
+
+                return true;
             }
-            catch (Exception)
+            catch
             {
                 _systemTrayService.HideProgressIndicator();
 
                 _messageBoxService.Show(string.Format("Unable to delete '{0}'!", fileViewModel.Title), "Error");
-
-                throw;
             }
+
+            return false;
         }
 
         private void AbortCurrentCall(bool hideSystemTray = false)
         {
-            if (_cancellationTokenSource == null)
-            {
-                _cancellationTokenSource = new CancellationTokenSource();
-
-                return;
-            }
-
             if (hideSystemTray)
             {
                 _systemTrayService.HideProgressIndicator();
             }
 
-            _cancellationTokenSource.Cancel();
-            _cancellationTokenSource.Dispose();
+            if (_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+            }
+
             _cancellationTokenSource = new CancellationTokenSource();
         }
     }
