@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -90,14 +91,26 @@ namespace PedroLamas.GDrive.Service
 
         public HttpClient CreateRestClient(string baseUrl)
         {
-            var client = new HttpClient
+            var handler = new HttpClientHandler();
+
+            if (handler.SupportsAutomaticDecompression)
             {
-                BaseAddress = new Uri(baseUrl)
+                handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            }
+
+            var client = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(baseUrl),
             };
 
-            //client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive (gzip)")));
-            //client.DefaultRequestHeaders.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive")));
+            if (handler.SupportsAutomaticDecompression)
+            {
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive_gzip")));
+            }
+            else
+            {
+                client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(new ProductHeaderValue("GDrive")));
+            }
 
             return client;
         }
