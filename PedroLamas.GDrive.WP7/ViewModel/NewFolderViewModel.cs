@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Cimbalino.Phone.Toolkit.Services;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -99,7 +100,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                 _navigationService.GoBack();
             }
-            catch (OperationCanceledException)
+            catch (TaskCanceledException)
             {
                 _systemTrayService.HideProgressIndicator();
             }

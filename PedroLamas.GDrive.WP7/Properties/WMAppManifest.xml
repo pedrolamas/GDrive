@@ -8,6 +8,7 @@
     <Capabilities>
       <Capability Name="ID_CAP_NETWORKING" />
       <Capability Name="ID_CAP_WEBBROWSERCOMPONENT" />
+      <Capability Name="ID_CAP_MEDIALIB" />
       <Capability Name="ID_CAP_ISV_CAMERA" />
     </Capabilities>
     <Tasks>

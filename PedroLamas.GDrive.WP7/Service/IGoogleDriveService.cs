@@ -18,5 +18,7 @@ namespace PedroLamas.GDrive.Service
         Task<GoogleDriveFile> FilesTrash(GoogleAuthToken authToken, string fileId, CancellationToken cancellationToken);
 
         Task<GoogleDriveFile> FilesUpdate(GoogleAuthToken authToken, string fileId, GoogleDriveFilesUpdateRequest filesUpdateRequest, CancellationToken cancellationToken);
+
+        Task<byte[]> FileDownload(GoogleAuthToken authToken, string downloadUrl, CancellationToken cancellationToken);
     }
 }

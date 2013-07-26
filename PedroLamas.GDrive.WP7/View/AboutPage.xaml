@@ -22,43 +22,6 @@
                             shell:SystemTray.IsVisible="True"
                             mc:Ignorable="d">
 
-    <phone:PhoneApplicationPage.Resources>
-        <Style x:Key="HyperlinkEmptyStyle" TargetType="HyperlinkButton">
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="HyperlinkButton">
-                        <ContentPresenter />
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="HeaderedContentControl1Style" TargetType="cimbalinoControls:HeaderedContentControl">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Left" />
-            <Setter Property="Margin" Value="0,0,0,12" />
-            <Setter Property="HeaderTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Style="{StaticResource TextExtraLargeStyle}" Text="{Binding}" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="ContentTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <TextBlock Foreground="{StaticResource PhoneAccentBrush}"
-                                   Style="{StaticResource TextSubtleStyle}"
-                                   Text="{Binding}"
-                                   TextWrapping="Wrap" />
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </phone:PhoneApplicationPage.Resources>
-
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <localViewModel:EventToCommand Command="{Binding PageLoadedCommand, Mode=OneTime}" />
@@ -79,20 +42,20 @@
 
                     <ScrollViewer>
                         <StackPanel>
-                            <HyperlinkButton Command="{Binding MarketplaceSearchCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                            <HyperlinkButton Command="{Binding MarketplaceSearchCommand, Mode=OneTime}" Style="{StaticResource EmptyHyperlinkButtonStyle}">
                                 <cimbalinoControls:HeaderedContentControl Content="Pedro Lamas"
                                                                           Header="development"
-                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
+                                                                          Style="{StaticResource LinkedHeaderedContentControlStyle}" />
                             </HyperlinkButton>
-                            <HyperlinkButton Command="{Binding OpenHomepageCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                            <HyperlinkButton Command="{Binding OpenHomepageCommand, Mode=OneTime}" Style="{StaticResource EmptyHyperlinkButtonStyle}">
                                 <cimbalinoControls:HeaderedContentControl Content="http://www.pedrolamas.com"
                                                                           Header="homepage"
-                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
+                                                                          Style="{StaticResource LinkedHeaderedContentControlStyle}" />
                             </HyperlinkButton>
-                            <HyperlinkButton Command="{Binding OpenTwitterCommand, Mode=OneTime}" Style="{StaticResource HyperlinkEmptyStyle}">
+                            <HyperlinkButton Command="{Binding OpenTwitterCommand, Mode=OneTime}" Style="{StaticResource EmptyHyperlinkButtonStyle}">
                                 <cimbalinoControls:HeaderedContentControl Content="@pedrolamas"
                                                                           Header="twitter"
-                                                                          Style="{StaticResource HeaderedContentControl1Style}" />
+                                                                          Style="{StaticResource LinkedHeaderedContentControlStyle}" />
                             </HyperlinkButton>
                         </StackPanel>
                     </ScrollViewer>

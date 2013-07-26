@@ -18,7 +18,7 @@ namespace PedroLamas.GDrive.ViewModel
 {
     public class ExplorerViewModel : ViewModelBase
     {
-        private const string GoogleDriveFilesListFields = "etag,items(description,fileSize,id,thumbnailLink,labels,mimeType,modifiedDate,title),nextPageToken";
+        private const string GoogleDriveFilesListFields = "etag,items(description,downloadUrl,fileSize,id,thumbnailLink,labels,mimeType,modifiedDate,title),nextPageToken";
         private const string GoogleDriveFileFields = "description,fileSize,id,labels,mimeType,modifiedDate,title";
 
         private readonly IMainModel _mainModel;
@@ -190,8 +190,7 @@ namespace PedroLamas.GDrive.ViewModel
 
                     IsSelectionEnabled = false;
 
-                    DeleteFiles(filesArray
-                        .Cast<GoogleFileViewModel>());
+                    DeleteFiles(filesArray);
                 });
             });
 
@@ -309,6 +308,12 @@ namespace PedroLamas.GDrive.ViewModel
                 RaisePropertyChanged(() => CurrentPath);
 
                 RefreshFiles();
+            }
+            else
+            {
+                _mainModel.SelectedFile = fileViewModel.FileModel;
+
+                _navigationService.NavigateTo("/View/ViewFilePage.xaml");
             }
         }
 

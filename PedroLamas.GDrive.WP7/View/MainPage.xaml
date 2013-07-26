@@ -68,7 +68,7 @@
                                                            Source={StaticResource Locator},
                                                            Mode=OneTime}"
                                          CommandParameter="{Binding}"
-                                         Style="{StaticResource EmptyButtonStyle}">
+                                         Style="{StaticResource EmptyHyperlinkButtonStyle}">
                             <toolkit:ContextMenuService.ContextMenu>
                                 <toolkit:ContextMenu>
                                     <toolkit:MenuItem Command="{Binding Main.RemoveAccountCommand,

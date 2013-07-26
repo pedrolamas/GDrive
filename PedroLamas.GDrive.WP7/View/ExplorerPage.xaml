@@ -98,13 +98,11 @@
                                          ItemsSource="{Binding Files}">
                     <toolkit:MultiselectList.ItemTemplate>
                         <DataTemplate>
-                            <HyperlinkButton HorizontalAlignment="Stretch"
-                                             HorizontalContentAlignment="Stretch"
-                                             Command="{Binding Explorer.OpenFileCommand,
+                            <HyperlinkButton Command="{Binding Explorer.OpenFileCommand,
                                                                Source={StaticResource Locator},
                                                                Mode=OneTime}"
                                              CommandParameter="{Binding}"
-                                             Style="{StaticResource EmptyButtonStyle}">
+                                             Style="{StaticResource EmptyHyperlinkButtonStyle}">
                                 <toolkit:ContextMenuService.ContextMenu>
                                     <toolkit:ContextMenu>
                                         <toolkit:MenuItem Command="{Binding Explorer.RenameFileCommand,
@@ -167,13 +165,18 @@
                     </ListBox.ItemsPanel>
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <Border Width="173"
-                                    Height="173"
-                                    Margin="12,0,0,12"
-                                    Background="#C0C0C0"
-                                    Padding="1">
-                                <localControls:SmoothImage ImageSource="{Binding ThumbnailLink}" />
-                            </Border>
+                            <HyperlinkButton Command="{Binding Explorer.OpenFileCommand,
+                                                               Source={StaticResource Locator}}"
+                                             CommandParameter="{Binding}"
+                                             Style="{StaticResource EmptyHyperlinkButtonStyle}">
+                                <Border Width="173"
+                                        Height="173"
+                                        Margin="12,0,0,12"
+                                        Background="#C0C0C0"
+                                        Padding="1">
+                                    <localControls:SmoothImage ImageSource="{Binding ThumbnailLink}" />
+                                </Border>
+                            </HyperlinkButton>
                         </DataTemplate>
                     </ListBox.ItemTemplate>
                 </ListBox>

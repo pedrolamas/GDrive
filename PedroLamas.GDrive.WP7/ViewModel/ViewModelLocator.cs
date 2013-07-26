@@ -29,6 +29,7 @@ namespace PedroLamas.GDrive.ViewModel
             Register<IMarketplaceSearchService, MarketplaceSearchService>();
             Register<IShareLinkService, ShareLinkService>();
             Register<IShellTileService, ShellTileService>();
+            Register<IMediaLibraryService, MediaLibraryService>();
 
             Register<IMainModel, MainModel>();
             Register<IGoogleClientSettings>(() => new GoogleClientSettings()
@@ -49,6 +50,7 @@ namespace PedroLamas.GDrive.ViewModel
             Register<ExplorerViewModel>();
             Register<NewFolderViewModel>();
             Register<RenameFileViewModel>();
+            Register<ViewFileViewModel>();
             Register<AuthorizationViewModel>();
             Register<AboutViewModel>();
         }
@@ -82,6 +84,14 @@ namespace PedroLamas.GDrive.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<RenameFileViewModel>();
+            }
+        }
+
+        public ViewFileViewModel ViewFile
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<ViewFileViewModel>();
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -192,6 +193,17 @@ namespace PedroLamas.GDrive.Service
             request.Content = new StringContent(JsonConvert.SerializeObject(filesUpdateRequest.File), Encoding.UTF8, JsonContentType);
 
             return _client.SendAndDeserialize<GoogleDriveFile>(request, cancellationToken);
+        }
+
+        public async Task<byte[]> FileDownload(GoogleAuthToken authToken, string downloadUrl, CancellationToken cancellationToken)
+        {
+            var request = _googleAuthService.CreateRestRequest(authToken,downloadUrl, HttpMethod.Get);
+
+            var response = await _client.SendAsync(request, cancellationToken);
+
+            response.EnsureSuccessStatusCode();
+
+            return await response.Content.ReadAsByteArrayAsync();
         }
     }
 }

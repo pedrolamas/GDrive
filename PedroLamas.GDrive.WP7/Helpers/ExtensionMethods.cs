@@ -5,12 +5,15 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Cimbalino.Phone.Toolkit.Extensions;
 using Newtonsoft.Json;
 
 namespace PedroLamas.GDrive.Helpers
 {
     public static class ExtensionMethods
     {
+        private static readonly string[] _availableSuffixes = new[] { "B", "KB", "MB", "GB", "TB" };
+
         public static string ToQueryString(this IDictionary<string, string> dictionary)
         {
             if (dictionary.Count == 0)
@@ -34,6 +37,25 @@ namespace PedroLamas.GDrive.Helpers
             response.EnsureSuccessStatusCode();
 
             return JsonConvert.DeserializeObject<T>(await response.Content.ReadAsStringAsync());
+        }
+
+        public static string FormatAsSize(this int size)
+        {
+            if (size <= 1024)
+            {
+                return "1 KB";
+            }
+
+            var suffixIndex = 0;
+
+            while (size > 1024)
+            {
+                size = size / 1024;
+
+                suffixIndex++;
+            }
+
+            return "{0} {1}".FormatWithInvariantCulture(size, _availableSuffixes[suffixIndex]);
         }
     }
 

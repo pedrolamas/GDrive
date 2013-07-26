@@ -92,7 +92,7 @@ namespace PedroLamas.GDrive.ViewModel
                     _applicationSettingsService.Set("AcceptedDisclaimer", true);
                     _applicationSettingsService.Save();
 
-                    _messageBoxService.Show("You are advised to read the GDrive disclaimer before you continue.\n\nWould you like to read it now?\n\nYou can always find it later in the About page.", "Welcome to GDrive", new string[] { "now", "later" }, buttonIndex =>
+                    _messageBoxService.Show("You are advised to read the GDrive disclaimer before you continue.\n\nWould you like to read it now?\n\nYou can always find it later in the About page.", "Welcome to GDrive", new[] { "now", "later" }, buttonIndex =>
                     {
                         if (buttonIndex == 0)
                         {

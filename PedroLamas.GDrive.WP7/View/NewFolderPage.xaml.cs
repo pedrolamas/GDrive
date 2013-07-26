@@ -1,4 +1,5 @@
-﻿using Microsoft.Phone.Controls;
+﻿using Cimbalino.Phone.Toolkit.Extensions;
+using Microsoft.Phone.Controls;
 
 namespace PedroLamas.GDrive.View
 {
@@ -6,6 +7,8 @@ namespace PedroLamas.GDrive.View
     {
         public NewFolderPage()
         {
+            this.ResetLanguageWithCurrentCulture();
+
             InitializeComponent();
         }
     }

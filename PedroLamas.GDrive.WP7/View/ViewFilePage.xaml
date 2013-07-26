@@ -1,0 +1,68 @@
+﻿<phone:PhoneApplicationPage x:Class="PedroLamas.GDrive.View.ViewFilePage"
+                            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                            xmlns:cimbalinoBehaviors="clr-namespace:Cimbalino.Phone.Toolkit.Behaviors;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:cimbalinoSystemControls="clr-namespace:System.Windows.Controls;assembly=Cimbalino.Phone.Toolkit"
+                            xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                            xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+                            xmlns:localControls="clr-namespace:PedroLamas.GDrive.Controls"
+                            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                            xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+                            xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+                            DataContext="{Binding ViewFile,
+                                                  Source={StaticResource Locator}}"
+                            FontFamily="{StaticResource PhoneFontFamilyNormal}"
+                            FontSize="{StaticResource PhoneFontSizeNormal}"
+                            Foreground="{StaticResource PhoneForegroundBrush}"
+                            Orientation="Portrait"
+                            Style="{StaticResource PhoneApplicationPageStyle}"
+                            SupportedOrientations="Portrait"
+                            shell:SystemTray.IsVisible="True"
+                            mc:Ignorable="d">
+
+    <i:Interaction.Behaviors>
+        <cimbalinoBehaviors:ApplicationBarBehavior BackgroundColor="{StaticResource Box2BackgroundColor}" ForegroundColor="{StaticResource Box2ForegroundColor}">
+            <cimbalinoBehaviors:ApplicationBarIconButton Command="{Binding DownloadFileCommand,
+                                                                           Mode=OneTime}"
+                                                         IconUri="/Images/appbar.download.rest.png"
+                                                         Text="download" />
+        </cimbalinoBehaviors:ApplicationBarBehavior>
+    </i:Interaction.Behaviors>
+
+    <Grid x:Name="LayoutRoot" Background="{StaticResource BackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="12,17,0,28">
+            <TextBlock x:Name="ApplicationTitle" Style="{StaticResource TextNormalStyle}">
+                <Run Text="{StaticResource ApplicationTitle}" />
+                <Run Text=" :: " />
+                <Run Text="{Binding AccountName}" />
+                <LineBreak />
+                <Run Text="{Binding CurrentPath}" />
+            </TextBlock>
+            <TextBlock x:Name="PageTitle"
+                       Margin="9,-7,0,0"
+                       Style="{StaticResource TextTitle1Style}"
+                       Text="{Binding Filename}" />
+        </StackPanel>
+
+        <ScrollViewer x:Name="ContentPanel"
+                      Grid.Row="1"
+                      Margin="12,0,12,0">
+            <StackPanel>
+                <Border Visibility="{Binding HasThumbnail, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <localControls:SmoothImage MaxHeight="220" ImageSource="{Binding ThumbnailUri}" />
+                </Border>
+                <cimbalinoSystemControls:HeaderedContentControl Content="{Binding FileSize}"
+                                                                Header="size"
+                                                                Style="{StaticResource RegularHeaderedContentControlStyle}" />
+                <cimbalinoSystemControls:HeaderedContentControl Content="{Binding FileModifiedDate}"
+                                                                Header="modified"
+                                                                Style="{StaticResource RegularHeaderedContentControlStyle}" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</phone:PhoneApplicationPage>

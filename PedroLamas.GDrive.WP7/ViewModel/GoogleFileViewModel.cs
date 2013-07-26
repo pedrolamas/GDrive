@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows.Data;
 using Cimbalino.Phone.Toolkit.Extensions;
 using GalaSoft.MvvmLight;
+using PedroLamas.GDrive.Helpers;
 using PedroLamas.GDrive.Service;
 
 namespace PedroLamas.GDrive.ViewModel
 {
     public class GoogleFileViewModel : ViewModelBase
     {
-        private static readonly string[] _availableSuffixes = new[] { "B", "KB", "MB", "GB", "TB" };
         private static readonly IValueConverter _dateTimeConverter = new Microsoft.Phone.Controls.ListViewDateTimeConverter();
 
         private GoogleDriveFile _fileModel;
@@ -68,35 +69,11 @@ namespace PedroLamas.GDrive.ViewModel
                 if (_fileModel == null)
                     return " ";
 
-                var dateString = _dateTimeConverter.Convert(_fileModel.ModifiedDate.Value, typeof(string), null, System.Globalization.CultureInfo.InvariantCulture);
+                var dateString = _dateTimeConverter.Convert(_fileModel.ModifiedDate.Value, typeof(string), null, CultureInfo.InvariantCulture);
 
                 if (_fileModel.FileSize.HasValue)
                 {
-                    var size = _fileModel.FileSize.Value;
-                    string sizeString;
-
-                    if (size <= 1024)
-                    {
-                        sizeString = "1 KB";
-                    }
-                    else
-                    {
-                        var suffixIndex = 0;
-
-                        if (size <= 1024)
-                            sizeString = "1 KB";
-
-                        while (size > 1024)
-                        {
-                            size = size / 1024;
-
-                            suffixIndex++;
-                        }
-
-                        sizeString = "{0} {1}".FormatWithInvariantCulture(size, _availableSuffixes[suffixIndex]);
-                    }
-
-                    return string.Format("Modified: {0}  Size: {1}", dateString, sizeString);
+                    return string.Format("Modified: {0}  Size: {1}", dateString, _fileModel.FileSize.Value.FormatAsSize());
                 }
 
                 return string.Format("Modified: {0}", dateString);

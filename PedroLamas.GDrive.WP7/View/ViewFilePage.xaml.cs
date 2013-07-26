@@ -3,9 +3,9 @@ using Microsoft.Phone.Controls;
 
 namespace PedroLamas.GDrive.View
 {
-    public partial class RenameFilePage : PhoneApplicationPage
+    public partial class ViewFilePage : PhoneApplicationPage
     {
-        public RenameFilePage()
+        public ViewFilePage()
         {
             this.ResetLanguageWithCurrentCulture();
 
